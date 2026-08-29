@@ -1,0 +1,42 @@
+# FreeIPA — Windows NSSM Configuration
+# ======================================
+#
+# !! NOT APPLICABLE !!
+#
+# FreeIPA is a Linux-only service. It cannot be installed or run on Windows.
+# FreeIPA relies on Linux-specific subsystems including:
+#
+#   - 389 Directory Server (LDAP backend)
+#   - MIT Kerberos KDC
+#   - BIND DNS
+#   - Dogtag Certificate Authority (Java/Tomcat)
+#   - Apache HTTPD (Web UI)
+#   - SSSD (System Security Services Daemon)
+#
+# These components have no native Windows equivalents and are not portable.
+#
+# Windows Integration Options
+# ----------------------------
+# Windows machines can JOIN an existing FreeIPA domain as clients using:
+#
+#   1. Samba Winbind — allows Windows-style domain membership via the
+#      trust relationship between FreeIPA and an Active Directory trust.
+#      See: https://www.freeipa.org/page/Active_Directory_trust_setup
+#
+#   2. FreeIPA–Active Directory Trust — establish a cross-realm trust so
+#      that Windows clients authenticate against their existing AD while
+#      sharing the Kerberos realm with FreeIPA Linux hosts.
+#
+#   3. LDAP client libraries — Windows applications can query the FreeIPA
+#      LDAP server (port 389/636) directly for user lookups.
+#
+# FreeIPA Server Requirements
+# ----------------------------
+# - RHEL 8/9, CentOS Stream 8/9, Fedora, Rocky Linux, AlmaLinux
+# - systemd init system
+# - x86_64 architecture
+# - Minimum 2 GB RAM (4 GB recommended for production)
+# - Fully qualified hostname resolvable in DNS
+#
+# For installation instructions, see: ../../../install/README.md
+# For service management on Linux, see: ../README.md

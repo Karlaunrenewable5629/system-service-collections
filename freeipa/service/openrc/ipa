@@ -1,0 +1,87 @@
+#!/sbin/openrc-run
+# OpenRC init script for FreeIPA
+# /etc/init.d/ipa
+#
+# NOTE: FreeIPA is primarily designed for RHEL/CentOS/Fedora with systemd.
+# This OpenRC script is provided for Alpine Linux or Gentoo environments
+# where FreeIPA packages are available, but it is not officially supported
+# by the upstream FreeIPA project.
+#
+# Copy to: /etc/init.d/ipa
+# Enable:  rc-update add ipa default
+# Start:   rc-service ipa start
+
+name="FreeIPA"
+description="FreeIPA Identity, Policy, and Audit"
+
+# ipactl orchestrates all IPA sub-services (dirsrv, krb5kdc, httpd, etc.)
+command="/usr/sbin/ipactl"
+command_args="start"
+
+# PID file — ipactl does not write one; use a sentinel file approach
+pidfile="/run/ipa/ipa.pid"
+
+# Log file for this wrapper script
+logfile="/var/log/ipa/openrc-ipa.log"
+
+depend() {
+    # IPA requires a working network and DNS
+    need net
+    need localmount
+    after bootmisc
+    after logger
+    after hostname
+
+    # If ntpd/chronyd is available, ensure time is synchronised first
+    # (Kerberos is extremely sensitive to clock skew)
+    use ntpd chronyd
+}
+
+start_pre() {
+    # Verify ipactl is available
+    if [ ! -x /usr/sbin/ipactl ]; then
+        eerror "ipactl not found. Please install freeipa-server."
+        return 1
+    fi
+
+    # Ensure the IPA config directory exists
+    if [ ! -d /etc/ipa ]; then
+        eerror "/etc/ipa not found. Has ipa-server-install been run?"
+        return 1
+    fi
+
+    # Create log directory if it does not exist
+    checkpath --directory --owner root:root --mode 0755 /var/log/ipa
+    checkpath --directory --owner root:root --mode 0755 /run/ipa
+}
+
+start() {
+    ebegin "Starting ${name}"
+    /usr/sbin/ipactl start >> "${logfile}" 2>&1
+    local ret=$?
+    if [ ${ret} -eq 0 ]; then
+        # Write a sentinel PID (the ipactl process itself is ephemeral)
+        echo $$ > "${pidfile}"
+    fi
+    eend ${ret} "Failed to start ${name}"
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/sbin/ipactl stop >> "${logfile}" 2>&1
+    local ret=$?
+    rm -f "${pidfile}"
+    eend ${ret} "Failed to stop ${name}"
+}
+
+restart() {
+    ebegin "Restarting ${name}"
+    /usr/sbin/ipactl restart >> "${logfile}" 2>&1
+    eend $? "Failed to restart ${name}"
+}
+
+status() {
+    ebegin "Status of ${name}"
+    /usr/sbin/ipactl status
+    eend $?
+}

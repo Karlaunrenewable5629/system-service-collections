@@ -1,0 +1,158 @@
+#!/bin/bash
+# SysVinit script for FreeIPA
+# /etc/init.d/ipa
+#
+# chkconfig: 2345 99 01
+# description: FreeIPA Identity, Policy, and Audit Server
+# processname: ipa
+#
+# NOTE: FreeIPA is primarily designed for RHEL/CentOS/Fedora with systemd.
+# This SysVinit script wraps ipactl for older RHEL 6 / CentOS 6 systems
+# that predate systemd. It is not tested against all distributions.
+#
+# Install:
+#   sudo cp ipa /etc/init.d/ipa
+#   sudo chmod +x /etc/init.d/ipa
+#   sudo chkconfig --add ipa
+#   sudo chkconfig ipa on
+#   sudo service ipa start
+
+### BEGIN INIT INFO
+# Provides:          ipa
+# Required-Start:    $network $local_fs $remote_fs $syslog
+# Required-Stop:     $network $local_fs $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: FreeIPA server
+# Description:       FreeIPA integrated identity management suite
+### END INIT INFO
+
+# Source the LSB init functions if available
+if [ -f /lib/lsb/init-functions ]; then
+    . /lib/lsb/init-functions
+elif [ -f /etc/init.d/functions ]; then
+    . /etc/init.d/functions
+fi
+
+NAME="ipa"
+DESC="FreeIPA Identity, Policy, and Audit"
+IPACTL="/usr/sbin/ipactl"
+LOCKFILE="/var/lock/subsys/ipa"
+LOGFILE="/var/log/ipa/sysvinit-ipa.log"
+
+# Colour helpers (no-op fallback if not defined by LSB)
+type log_daemon_msg &>/dev/null || log_daemon_msg() { echo -n "$*"; }
+type log_end_msg   &>/dev/null || log_end_msg()   { [ "$1" -eq 0 ] && echo " OK" || echo " FAILED"; }
+
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+_check_ipa() {
+    if [ ! -x "${IPACTL}" ]; then
+        echo "ERROR: ${IPACTL} not found. Install freeipa-server." >&2
+        exit 5  # LSB: program not installed
+    fi
+    if [ ! -d /etc/ipa ]; then
+        echo "ERROR: /etc/ipa not found. Run ipa-server-install first." >&2
+        exit 6  # LSB: program not configured
+    fi
+}
+
+_mkdir_log() {
+    mkdir -p "$(dirname "${LOGFILE}")"
+}
+
+# ---------------------------------------------------------------------------
+# Service actions
+# ---------------------------------------------------------------------------
+
+start() {
+    _check_ipa
+    _mkdir_log
+    log_daemon_msg "Starting ${DESC}"
+    "${IPACTL}" start >> "${LOGFILE}" 2>&1
+    RETVAL=$?
+    if [ ${RETVAL} -eq 0 ]; then
+        touch "${LOCKFILE}"
+        log_end_msg 0
+    else
+        log_end_msg 1
+        echo "See ${LOGFILE} for details." >&2
+    fi
+    return ${RETVAL}
+}
+
+stop() {
+    _check_ipa
+    _mkdir_log
+    log_daemon_msg "Stopping ${DESC}"
+    "${IPACTL}" stop >> "${LOGFILE}" 2>&1
+    RETVAL=$?
+    rm -f "${LOCKFILE}"
+    if [ ${RETVAL} -eq 0 ]; then
+        log_end_msg 0
+    else
+        log_end_msg 1
+    fi
+    return ${RETVAL}
+}
+
+restart() {
+    _check_ipa
+    _mkdir_log
+    log_daemon_msg "Restarting ${DESC}"
+    "${IPACTL}" restart >> "${LOGFILE}" 2>&1
+    RETVAL=$?
+    if [ ${RETVAL} -eq 0 ]; then
+        touch "${LOCKFILE}"
+        log_end_msg 0
+    else
+        log_end_msg 1
+    fi
+    return ${RETVAL}
+}
+
+status() {
+    echo "=== ${DESC} status ==="
+    "${IPACTL}" status
+    RETVAL=$?
+    if [ -f "${LOCKFILE}" ]; then
+        echo "Lock file: ${LOCKFILE} (exists)"
+    else
+        echo "Lock file: ${LOCKFILE} (absent)"
+    fi
+    return ${RETVAL}
+}
+
+# ---------------------------------------------------------------------------
+# Dispatcher
+# ---------------------------------------------------------------------------
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        restart
+        ;;
+    status)
+        status
+        ;;
+    condrestart|try-restart)
+        if [ -f "${LOCKFILE}" ]; then
+            restart
+        else
+            echo "${NAME} is not running; skipping restart."
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status|condrestart}"
+        exit 2
+        ;;
+esac
+
+exit $?
