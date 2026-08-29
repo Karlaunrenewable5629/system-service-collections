@@ -21,6 +21,17 @@ Apache Tomcat is an open-source implementation of the Jakarta Servlet, Jakarta S
 - Port 8080 (HTTP), 8443 (HTTPS), 8005 (shutdown)
 - Java installed on the system
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Apache Tomcat]
+    B --> C[HTTP Servlet]
+    B --> D[HTTPS Connector]
+    B --> E[Shutdown port]
+    C --> D
+```
+
 ## Structure
 
 ```
