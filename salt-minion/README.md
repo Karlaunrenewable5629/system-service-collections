@@ -22,6 +22,16 @@ Salt Minion is the agent component of SaltStack (Salt Project), a powerful remot
 - Root or sudo privileges
 - Network access to Salt Master on ports 4505 and 4506 (for master mode)
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Master] --> B[Salt Minion]
+    B --> C[Remote Execution]
+    B --> D[Configuration]
+    B --> E[Orchestration]
+```
+
 ## Structure
 
 ```
