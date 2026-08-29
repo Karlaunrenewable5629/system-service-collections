@@ -1,0 +1,17 @@
+[Unit]
+Description=Traefik - modern HTTP reverse proxy and load balancer
+Documentation=https://doc.traefik.io/traefik/
+After=network.target docker.service
+Wants=network.target docker.service
+
+[Service]
+Type=simple
+User=traefik
+Group=traefik
+ExecStart=/usr/local/bin/traefik --configFile=/etc/traefik/traefik.yml
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,30 @@
+# traefik.nssm - NSSM service configuration for Traefik
+#
+# Usage:
+#   nssm install traefik C:\usr\local\bin\traefik.exe --configFile=C:\etc\traefik\traefik.yml
+#   nssm set traefik AppDirectory C:\usr\local\bin
+#   nssm set traefik AppStdout C:\var\log\traefik\access.log
+#   nssm set traefik AppStderr C:\var\log\traefik\traefik.log
+#   nssm start traefik
+#
+# Or apply this file:
+#   nssm edit traefik
+
+AppName        traefik
+DisplayName    Traefik - modern HTTP reverse proxy and load balancer
+Description    Traefik is a modern HTTP reverse proxy and load balancer
+
+AppParameters  --configFile=C:\etc\traefik\traefik.yml
+AppDirectory   C:\usr\local\bin
+AppExecutable  C:\usr\local\bin\traefik.exe
+
+AppStdout      C:\var\log\traefik\access.log
+AppStderr      C:\var\log\traefik\traefik.log
+AppRotateFiles 1
+AppRotateOnline 1
+AppRotateSeconds 86400
+
+AppRestart     5000
+AppStopMethodConsole 15000
+
+DependentService docker

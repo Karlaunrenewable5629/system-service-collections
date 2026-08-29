@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+name="traefik"
+description="Traefik - modern HTTP reverse proxy and load balancer"
+command="/usr/local/bin/traefik"
+command_args="--configFile=/etc/traefik/traefik.yml"
+command_user="traefik:traefik"
+pidfile="/run/traefik.pid"
+command_background="yes"
+
+depend()
+{
+    need net
+    use docker
+    after docker
+}
+
+start_pre()
+{
+    checkpath -d /etc/traefik --owner traefik:traefik
+    checkpath -d /var/log/traefik --owner traefik:traefik
+    checkpath -f /etc/traefik/acme.json --owner traefik:traefik --mode 600
+}
