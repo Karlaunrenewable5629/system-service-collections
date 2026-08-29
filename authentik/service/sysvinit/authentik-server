@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+### BEGIN INIT INFO
+# Provides:          authentik-server
+# Required-Start:    $network $remote_fs $syslog postgresql redis-server
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Authentik Identity Provider - Server
+# Description:       HTTP/HTTPS server for the Authentik identity provider.
+#                    Serves the web UI, OAuth2/OIDC/SAML/LDAP endpoints,
+#                    and the management API on ports 9000 and 9443.
+### END INIT INFO
+
+# =============================================================================
+# SysVinit script for Authentik Server
+# =============================================================================
+# Install: sudo cp authentik-server /etc/init.d/
+#          sudo chmod +x /etc/init.d/authentik-server
+#          sudo update-rc.d authentik-server defaults
+#          sudo service authentik-server start
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="Authentik Identity Provider - Server"
+NAME="authentik-server"
+
+AUTHENTIK_USER="authentik"
+AUTHENTIK_GROUP="authentik"
+INSTALL_DIR="/opt/authentik"
+CONFIG_FILE="/etc/authentik/.env"
+LOG_DIR="/var/log/authentik"
+PIDFILE="/run/authentik/${NAME}.pid"
+PYTHON="${INSTALL_DIR}/venv/bin/python"
+DAEMON_ARGS="-m authentik.manage server"
+
+SCRIPTNAME="/etc/init.d/${NAME}"
+
+# Source LSB functions
+. /lib/lsb/init-functions
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
+
+do_start() {
+    [ -f "${CONFIG_FILE}" ] || { log_failure_msg "Config not found: ${CONFIG_FILE}"; return 1; }
+    [ -x "${PYTHON}" ]      || { log_failure_msg "Python not found: ${PYTHON}"; return 1; }
+
+    mkdir -p "$(dirname "${PIDFILE}")" "${LOG_DIR}"
+    chown "${AUTHENTIK_USER}:${AUTHENTIK_GROUP}" "$(dirname "${PIDFILE}")" "${LOG_DIR}"
+
+    start-stop-daemon --start --quiet \
+        --pidfile "${PIDFILE}" \
+        --make-pidfile \
+        --background \
+        --chuid "${AUTHENTIK_USER}:${AUTHENTIK_GROUP}" \
+        --chdir "${INSTALL_DIR}" \
+        --exec "${PYTHON}" \
+        --test > /dev/null 2>&1 || return 1
+
+    # Load environment file
+    set -a
+    # shellcheck source=/dev/null
+    [ -f "${CONFIG_FILE}" ] && . "${CONFIG_FILE}"
+    set +a
+
+    start-stop-daemon --start --quiet \
+        --pidfile "${PIDFILE}" \
+        --make-pidfile \
+        --background \
+        --chuid "${AUTHENTIK_USER}:${AUTHENTIK_GROUP}" \
+        --chdir "${INSTALL_DIR}" \
+        --exec "${PYTHON}" \
+        -- ${DAEMON_ARGS} \
+        >> "${LOG_DIR}/server.log" 2>&1
+    return $?
+}
+
+do_stop() {
+    start-stop-daemon --stop --quiet \
+        --retry=TERM/30/KILL/5 \
+        --pidfile "${PIDFILE}"
+    RETVAL="$?"
+    [ "${RETVAL}" -eq 0 ] && rm -f "${PIDFILE}"
+    return "${RETVAL}"
+}
+
+do_reload() {
+    start-stop-daemon --stop --signal HUP --quiet \
+        --pidfile "${PIDFILE}"
+    return $?
+}
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+case "$1" in
+    start)
+        log_daemon_msg "Starting ${DESC}" "${NAME}"
+        do_start
+        log_end_msg $?
+        ;;
+    stop)
+        log_daemon_msg "Stopping ${DESC}" "${NAME}"
+        do_stop
+        log_end_msg $?
+        ;;
+    status)
+        status_of_proc -p "${PIDFILE}" "${PYTHON}" "${NAME}"
+        ;;
+    restart|force-reload)
+        log_daemon_msg "Restarting ${DESC}" "${NAME}"
+        do_stop
+        sleep 1
+        do_start
+        log_end_msg $?
+        ;;
+    reload)
+        log_daemon_msg "Reloading ${DESC}" "${NAME}"
+        do_reload
+        log_end_msg $?
+        ;;
+    *)
+        echo "Usage: ${SCRIPTNAME} {start|stop|status|restart|reload|force-reload}" >&2
+        exit 3
+        ;;
+esac
+
+exit 0

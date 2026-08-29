@@ -1,0 +1,54 @@
+#!/sbin/openrc-run
+# =============================================================================
+# OpenRC init script for Authentik Identity Provider - Worker
+# =============================================================================
+# Install: sudo cp authentik-worker /etc/init.d/
+#          sudo chmod +x /etc/init.d/authentik-worker
+#          sudo rc-update add authentik-worker default
+#          sudo rc-service authentik-worker start
+
+description="Authentik Identity Provider - Worker"
+extra_commands="checkconfig"
+
+: "${AUTHENTIK_USER:=authentik}"
+: "${AUTHENTIK_GROUP:=authentik}"
+: "${INSTALL_DIR:=/opt/authentik}"
+: "${CONFIG_FILE:=/etc/authentik/.env}"
+: "${LOG_DIR:=/var/log/authentik}"
+: "${PIDFILE:=/run/authentik/authentik-worker.pid}"
+
+name="authentik-worker"
+command="${INSTALL_DIR}/venv/bin/python"
+command_args="-m authentik.manage worker"
+command_user="${AUTHENTIK_USER}:${AUTHENTIK_GROUP}"
+command_background="yes"
+pidfile="${PIDFILE}"
+output_log="${LOG_DIR}/worker.log"
+error_log="${LOG_DIR}/worker-error.log"
+start_stop_daemon_args="--env-file ${CONFIG_FILE} --chdir ${INSTALL_DIR}"
+
+depend() {
+    need net
+    need postgresql
+    need redis
+    after localmount logger
+    after authentik-server
+}
+
+checkconfig() {
+    if [ ! -f "${CONFIG_FILE}" ]; then
+        eerror "Configuration file not found: ${CONFIG_FILE}"
+        return 1
+    fi
+    if [ ! -f "${INSTALL_DIR}/venv/bin/python" ]; then
+        eerror "Authentik virtual environment not found: ${INSTALL_DIR}/venv"
+        return 1
+    fi
+    return 0
+}
+
+start_pre() {
+    checkconfig || return 1
+    checkpath --directory --owner "${AUTHENTIK_USER}:${AUTHENTIK_GROUP}" --mode 0750 "$(dirname "${PIDFILE}")"
+    checkpath --directory --owner "${AUTHENTIK_USER}:${AUTHENTIK_GROUP}" --mode 0750 "${LOG_DIR}"
+}

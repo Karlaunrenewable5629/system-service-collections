@@ -1,0 +1,196 @@
+@echo off
+:: =============================================================================
+:: Authentik Windows NSSM Service Installer
+:: =============================================================================
+:: Installs and configures the Authentik server and worker as Windows services
+:: using NSSM (Non-Sucking Service Manager).
+::
+:: Prerequisites:
+::   - NSSM installed and available in PATH (https://nssm.cc/download)
+::   - Python 3.12+ installed with Authentik in a virtual environment
+::   - Authentik installed at C:\authentik\venv
+::   - Configuration file at C:\authentik\.env
+::
+:: Usage:
+::   Run as Administrator:  authentik-server.nssm install
+::                          authentik-server.nssm remove
+::                          authentik-server.nssm start
+::                          authentik-server.nssm stop
+::                          authentik-server.nssm status
+:: =============================================================================
+
+setlocal EnableDelayedExpansion
+
+:: ----------------------------------------------------------------------------
+:: Configuration — adjust paths to match your deployment
+:: ----------------------------------------------------------------------------
+set "AUTHENTIK_HOME=C:\authentik"
+set "PYTHON=%AUTHENTIK_HOME%\venv\Scripts\python.exe"
+set "ENV_FILE=%AUTHENTIK_HOME%\.env"
+set "LOG_DIR=%AUTHENTIK_HOME%\logs"
+set "SERVER_SERVICE=authentik-server"
+set "WORKER_SERVICE=authentik-worker"
+set "DISPLAY_NAME_SERVER=Authentik Identity Provider - Server"
+set "DISPLAY_NAME_WORKER=Authentik Identity Provider - Worker"
+set "DESCRIPTION_SERVER=HTTP/HTTPS server for the Authentik IdP. Serves the web UI and OAuth2/OIDC/SAML endpoints on ports 9000 and 9443."
+set "DESCRIPTION_WORKER=Background task worker for the Authentik IdP. Handles provisioning, event processing, and scheduled tasks."
+
+:: ----------------------------------------------------------------------------
+:: Require Administrator
+:: ----------------------------------------------------------------------------
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] This script must be run as Administrator.
+    echo         Right-click and select "Run as administrator".
+    pause
+    exit /b 1
+)
+
+:: ----------------------------------------------------------------------------
+:: Check NSSM
+:: ----------------------------------------------------------------------------
+where nssm >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [ERROR] NSSM not found in PATH.
+    echo         Download from https://nssm.cc/download and place nssm.exe
+    echo         in C:\Windows\System32\ or another PATH directory.
+    pause
+    exit /b 1
+)
+
+:: ----------------------------------------------------------------------------
+:: Check Python / Authentik
+:: ----------------------------------------------------------------------------
+if not exist "%PYTHON%" (
+    echo [ERROR] Python not found at: %PYTHON%
+    echo         Install Authentik in a virtual environment at %AUTHENTIK_HOME%\venv
+    pause
+    exit /b 1
+)
+
+:: ----------------------------------------------------------------------------
+:: Dispatch Command
+:: ----------------------------------------------------------------------------
+set "COMMAND=%~1"
+if "%COMMAND%"=="" set "COMMAND=install"
+
+if /i "%COMMAND%"=="install"  goto :do_install
+if /i "%COMMAND%"=="remove"   goto :do_remove
+if /i "%COMMAND%"=="start"    goto :do_start
+if /i "%COMMAND%"=="stop"     goto :do_stop
+if /i "%COMMAND%"=="restart"  goto :do_restart
+if /i "%COMMAND%"=="status"   goto :do_status
+
+echo [ERROR] Unknown command: %COMMAND%
+echo Usage: %~nx0 {install^|remove^|start^|stop^|restart^|status}
+exit /b 1
+
+:: ============================================================================
+:do_install
+:: ============================================================================
+echo [INFO] Installing Authentik services...
+
+:: Create log directory
+if not exist "%LOG_DIR%" (
+    mkdir "%LOG_DIR%"
+    echo [OK]   Created log directory: %LOG_DIR%
+)
+
+:: ---- Server service ----
+echo [INFO] Installing service: %SERVER_SERVICE%
+nssm install "%SERVER_SERVICE%" "%PYTHON%" "-m authentik.manage server"
+nssm set "%SERVER_SERVICE%" DisplayName "%DISPLAY_NAME_SERVER%"
+nssm set "%SERVER_SERVICE%" Description "%DESCRIPTION_SERVER%"
+nssm set "%SERVER_SERVICE%" AppDirectory "%AUTHENTIK_HOME%"
+nssm set "%SERVER_SERVICE%" AppEnvFile "%ENV_FILE%"
+nssm set "%SERVER_SERVICE%" AppStdout "%LOG_DIR%\server.log"
+nssm set "%SERVER_SERVICE%" AppStderr "%LOG_DIR%\server-error.log"
+nssm set "%SERVER_SERVICE%" AppStdoutCreationDisposition 4
+nssm set "%SERVER_SERVICE%" AppStderrCreationDisposition 4
+nssm set "%SERVER_SERVICE%" AppRotateFiles 1
+nssm set "%SERVER_SERVICE%" AppRotateOnline 1
+nssm set "%SERVER_SERVICE%" AppRotateBytes 10485760
+nssm set "%SERVER_SERVICE%" AppRestartDelay 5000
+nssm set "%SERVER_SERVICE%" Start SERVICE_AUTO_START
+nssm set "%SERVER_SERVICE%" ObjectName LocalSystem
+echo [OK]   Service installed: %SERVER_SERVICE%
+
+:: ---- Worker service ----
+echo [INFO] Installing service: %WORKER_SERVICE%
+nssm install "%WORKER_SERVICE%" "%PYTHON%" "-m authentik.manage worker"
+nssm set "%WORKER_SERVICE%" DisplayName "%DISPLAY_NAME_WORKER%"
+nssm set "%WORKER_SERVICE%" Description "%DESCRIPTION_WORKER%"
+nssm set "%WORKER_SERVICE%" AppDirectory "%AUTHENTIK_HOME%"
+nssm set "%WORKER_SERVICE%" AppEnvFile "%ENV_FILE%"
+nssm set "%WORKER_SERVICE%" AppStdout "%LOG_DIR%\worker.log"
+nssm set "%WORKER_SERVICE%" AppStderr "%LOG_DIR%\worker-error.log"
+nssm set "%WORKER_SERVICE%" AppStdoutCreationDisposition 4
+nssm set "%WORKER_SERVICE%" AppStderrCreationDisposition 4
+nssm set "%WORKER_SERVICE%" AppRotateFiles 1
+nssm set "%WORKER_SERVICE%" AppRotateOnline 1
+nssm set "%WORKER_SERVICE%" AppRotateBytes 10485760
+nssm set "%WORKER_SERVICE%" AppRestartDelay 5000
+nssm set "%WORKER_SERVICE%" Start SERVICE_AUTO_START
+nssm set "%WORKER_SERVICE%" ObjectName LocalSystem
+echo [OK]   Service installed: %WORKER_SERVICE%
+
+echo.
+echo [INFO] Services installed. Edit %ENV_FILE% before starting.
+echo.
+echo        To start:   %~nx0 start
+echo        To access:  http://localhost:9000/if/flow/initial-setup/
+goto :eof
+
+:: ============================================================================
+:do_remove
+:: ============================================================================
+echo [INFO] Removing Authentik services...
+
+nssm stop "%SERVER_SERVICE%" >nul 2>&1
+nssm remove "%SERVER_SERVICE%" confirm
+echo [OK]   Removed: %SERVER_SERVICE%
+
+nssm stop "%WORKER_SERVICE%" >nul 2>&1
+nssm remove "%WORKER_SERVICE%" confirm
+echo [OK]   Removed: %WORKER_SERVICE%
+goto :eof
+
+:: ============================================================================
+:do_start
+:: ============================================================================
+echo [INFO] Starting Authentik services...
+nssm start "%SERVER_SERVICE%"
+nssm start "%WORKER_SERVICE%"
+echo [OK]   Services started.
+echo        Access: http://localhost:9000/
+goto :eof
+
+:: ============================================================================
+:do_stop
+:: ============================================================================
+echo [INFO] Stopping Authentik services...
+nssm stop "%WORKER_SERVICE%"
+nssm stop "%SERVER_SERVICE%"
+echo [OK]   Services stopped.
+goto :eof
+
+:: ============================================================================
+:do_restart
+:: ============================================================================
+echo [INFO] Restarting Authentik services...
+call :do_stop
+timeout /t 2 /nobreak >nul
+call :do_start
+goto :eof
+
+:: ============================================================================
+:do_status
+:: ============================================================================
+echo [INFO] Service status:
+echo.
+echo --- %SERVER_SERVICE% ---
+nssm status "%SERVER_SERVICE%"
+echo.
+echo --- %WORKER_SERVICE% ---
+nssm status "%WORKER_SERVICE%"
+goto :eof

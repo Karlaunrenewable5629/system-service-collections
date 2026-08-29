@@ -1,0 +1,60 @@
+[Unit]
+Description=Authentik Identity Provider - Server
+Documentation=https://docs.goauthentik.io/
+After=network-online.target postgresql.service redis.service
+Wants=network-online.target
+Requires=authentik-worker.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+
+# User / Group
+User=authentik
+Group=authentik
+
+# Working and state directories
+WorkingDirectory=/opt/authentik
+RuntimeDirectory=authentik
+RuntimeDirectoryMode=0750
+
+# Environment
+EnvironmentFile=/etc/authentik/.env
+
+# Main process: authentik server
+ExecStart=/opt/authentik/venv/bin/python -m authentik.manage server
+
+# Graceful stop: allow up to 60 seconds for in-flight requests
+TimeoutStopSec=60
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Restart behaviour
+Restart=on-failure
+RestartSec=5s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=authentik-server
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/authentik /var/log/authentik
+CapabilityBoundingSet=
+AmbientCapabilities=
+LockPersonality=true
+MemoryDenyWriteExecute=false
+RestrictRealtime=true
+RestrictNamespaces=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target
