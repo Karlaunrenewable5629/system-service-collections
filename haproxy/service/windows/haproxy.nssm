@@ -1,0 +1,32 @@
+@echo off
+REM HAProxy Windows Service Installation via NSSM
+
+set SERVICE_NAME=haproxy
+set DISPLAY_NAME=HAProxy Load Balancer
+set DESCRIPTION=HAProxy is a high-performance load balancer and proxy
+set EXECUTABLE=C:\haproxy\haproxy.exe
+set APPDIRECTORY=C:\haproxy
+set CONFIG_FILE=C:\haproxy\haproxy.cfg
+set LOG_DIRECTORY=C:\haproxy\logs
+
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+nssm install %SERVICE_NAME% "%EXECUTABLE%" "-f %CONFIG_FILE%"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\haproxy-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\haproxy-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% ObjectName "NT AUTHORITY\NetworkService"
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.

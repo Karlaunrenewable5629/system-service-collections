@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+name="haproxy"
+description="HAProxy Load Balancer"
+
+command="/usr/sbin/haproxy"
+command_args="-f /etc/haproxy/haproxy.cfg -D -p /run/haproxy.pid"
+command_background=true
+pidfile="/run/haproxy.pid"
+required_files="/etc/haproxy/haproxy.cfg"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner haproxy:haproxy --mode 0755 /run/haproxy
+    checkpath --directory --owner haproxy:haproxy --mode 0755 /var/lib/haproxy
+    checkpath --directory --owner haproxy:haproxy --mode 0755 /var/log/haproxy
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    kill $(cat $pidfile 2>/dev/null) 2>/dev/null || true
+    eend $?
+}

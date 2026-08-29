@@ -1,0 +1,22 @@
+[Unit]
+Description=HAProxy Load Balancer
+Documentation=https://www.haproxy.org/
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+Type=notify
+User=haproxy
+Group=haproxy
+ExecStart=/usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -D -p /run/haproxy.pid
+ExecReload=/bin/kill -USR2 $MAINPID
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=1048576
+LimitNPROC=65536
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
