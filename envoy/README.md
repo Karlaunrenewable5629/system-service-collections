@@ -24,6 +24,17 @@ Envoy is a high-performance, C++ built proxy designed for large modern service-o
 - Ports 80, 443, and 19000 (admin) open
 - Envoy binary installed
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Envoy]
+    B --> C[TCP Proxy]
+    B --> D[HTTP Proxy]
+    C --> E[Backend Servers]
+    D --> F[Web Servers]
+```
+
 ## Structure
 
 ```
