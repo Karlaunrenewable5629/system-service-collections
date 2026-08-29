@@ -1,0 +1,40 @@
+{
+  "SiteConfiguration": {
+    "SiteName": "My Mattermost Server",
+    "SiteDescription": "Mattermost Server",
+    "CompanyName": "My Company",
+    "EmailSettings": {
+      "SendEmail": false,
+      "ServiceSettings": {
+        "EmailHost": "smtp.example.com",
+        "EmailPort": 587,
+        "Username": "user@example.com",
+        "Password": "email_password",
+        "SkipVerify": false
+      },
+      "FromAddress": "noreply@example.com"
+    },
+    "ServiceSettings": {
+      "AnnouncementPostId": "",
+      "ServiceSettingsVersion": "9.10.0"
+    },
+    "PrivacySettings": {
+      "AllowUserToPasswordReset": true,
+      "LoginAuthenticator": "password",
+      "OAuthIdPConnect": false
+    },
+    "PostSettings": {
+      "EnablePostOrdering": true,
+      "EnablePostUsername": true
+    },
+    "PluginSettings": [],
+    "FeatureSettings": {
+      "EnablePostUsername": true,
+      "EnablePostUsernameInRouter": true,
+      "EnablePostHint": true,
+      "EnableEmoji": true,
+      "EnableGiphy": true,
+      "EnableInAppPurchase": false
+    }
+  }
+}
