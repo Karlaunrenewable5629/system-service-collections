@@ -92,9 +92,9 @@ Each folder contains a service structure supporting multiple init systems, allow
 
 ### Container & Orchestration
 
-- [ ] [containerd](./containerd/) - Container runtime for Linux and Windows.
-- [ ] [docker](./docker/) - Container platform for developing, shipping, and running applications.
-- [ ] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
+- [x] [containerd](./containerd/) - Container runtime for Linux and Windows.
+- [x] [docker](./docker/) - Container platform for developing, shipping, and running applications.
+- [x] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
 
 ### Databases & Storage
 
