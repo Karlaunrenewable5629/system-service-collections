@@ -1,0 +1,20 @@
+[Unit]
+Description=Redis In-Memory Data Structure Store
+Documentationhttps://redis.io/docs/
+After=network.target
+
+[Service]
+Type=notify
+User=redis
+Group=redis
+ExecStart=/usr/bin/redis-server /etc/redis/redis.conf
+ExecReload=/usr/bin/redis-server /etc/redis/redis.conf --reconfig
+TimeoutStopSec=10
+KillSignal=SIGTERM
+LimitNOFILE=65536
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

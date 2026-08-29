@@ -1,0 +1,37 @@
+@echo off
+REM Redis Windows Service Installation via NSSM
+REM Run as Administrator
+
+set SERVICE_NAME=redis
+set DISPLAY_NAME=Redis In-Memory Data Structure Store
+set DESCRIPTION=In-memory data structure store, used as a database, cache, and message broker
+set EXECUTABLE=C:\Redis\redis-server.exe
+set APPDIRECTORY=C:\Redis
+set LOG_DIRECTORY=C:\Redis\log
+
+REM Create log directory if not exists
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+REM Install service
+nssm install %SERVICE_NAME% "%EXECUTABLE%" "%APPDIRECTORY%\redis.conf"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\redis-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\redis-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% ObjectName "NT AUTHORITY\NetworkService"
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+REM Set recovery actions
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.
+echo Start with: nssm start %SERVICE_NAME%
+echo Stop with: nssm stop %SERVICE_NAME%

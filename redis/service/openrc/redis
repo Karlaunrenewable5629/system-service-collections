@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="redis"
+description="Redis In-Memory Data Structure Store"
+
+command="/usr/bin/redis-server"
+command_args="/etc/redis/redis.conf"
+command_background=true
+pidfile="/run/redis/redis.pid"
+required_files="/usr/bin/redis-server /etc/redis/redis.conf"
+start_pre() {
+    checkpath --directory --owner redis:redis --mode 0755 /var/lib/redis
+    checkpath --directory --owner redis:redis --mode 0755 /var/log/redis
+    checkpath --directory --owner redis:redis --mode 0755 /run/redis
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/redis-server /etc/redis/redis.conf --stop
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}
