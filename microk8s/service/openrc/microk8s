@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+name="microk8s"
+description="MicroK8s Kubernetes (managed via snap)"
+
+depend() {
+    need net
+    need localmount
+    need snapd
+    after firewall
+}
+
+start() {
+    ebegin "Starting ${name}"
+    /usr/bin/microk8s start
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/microk8s stop
+    eend $?
+}
+
+status() {
+    /usr/bin/microk8s status
+}

@@ -1,0 +1,35 @@
+# MicroK8s systemd Service
+#
+# MicroK8s manages its own systemd services via snap.
+# The primary service units are installed automatically by snap:
+#
+#   snap.microk8s.daemon-kubelite.service  - API server, controller, scheduler, kubelet
+#   snap.microk8s.daemon-containerd.service - containerd runtime
+#   snap.microk8s.daemon-cluster-agent.service - cluster join agent
+#
+# Do NOT modify these unit files directly. Use `microk8s start/stop` instead.
+#
+# To inspect the units:
+#   systemctl status snap.microk8s.daemon-kubelite
+#   systemctl cat snap.microk8s.daemon-kubelite
+#
+# To restart individual components:
+#   sudo systemctl restart snap.microk8s.daemon-kubelite
+#   sudo systemctl restart snap.microk8s.daemon-containerd
+
+[Unit]
+Description=MicroK8s (managed by snap)
+Documentation=https://microk8s.io/docs
+After=network-online.target snapd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/microk8s start
+ExecStop=/usr/bin/microk8s stop
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
