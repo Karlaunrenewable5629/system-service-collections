@@ -25,6 +25,17 @@ Kong is a cloud-native, fast, scalable, and dynamic API Gateway built on top of 
 - PostgreSQL or Cassandra database
 - Docker recommended for production
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Kong]
+    B --> C[API Gateway]
+    B --> D[Plugin System]
+    C --> E[Upstream Services]
+    D --> F[Auth, Rate Limiting, Logging]
+```
+
 ## Structure
 
 ```
