@@ -1,0 +1,35 @@
+@echo off
+REM Docker Windows Service Installation via NSSM
+REM Run as Administrator
+
+set SERVICE_NAME=docker
+set DISPLAY_NAME=Docker Application Container Engine
+set DESCRIPTION=Docker platform for developing, shipping, and running containers
+set EXECUTABLE=C:\Program Files\Docker\dockerd.exe
+set APPDIRECTORY=C:\ProgramData\docker
+set CONFIG_FILE=C:\ProgramData\docker\config\daemon.json
+set LOG_DIRECTORY=C:\ProgramData\docker\logs
+
+if not exist "%APPDIRECTORY%\config" mkdir "%APPDIRECTORY%\config"
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+nssm install %SERVICE_NAME% "%EXECUTABLE%"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppParameters "--config-file %CONFIG_FILE%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\docker-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\docker-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.
+echo Start with: nssm start %SERVICE_NAME%
+echo Stop with : nssm stop %SERVICE_NAME%

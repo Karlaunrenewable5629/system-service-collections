@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+name="docker"
+description="Docker Application Container Engine"
+
+command="/usr/bin/dockerd"
+command_args="--config-file /etc/docker/daemon.json"
+command_background=true
+pidfile="/run/docker.pid"
+output_log="/var/log/docker.log"
+error_log="/var/log/docker.log"
+
+depend() {
+    need net
+    need localmount
+    after firewall
+    use dns
+}
+
+start_pre() {
+    checkpath --directory --mode 0710 /var/lib/docker
+    checkpath --directory --mode 0710 /run/docker
+}
