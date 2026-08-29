@@ -1,0 +1,14 @@
+[Unit]
+Description=Podman API Socket
+Documentation=man:podman-system-service(1)
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/bin/podman system service --time=0 unix:///run/podman/podman.sock
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

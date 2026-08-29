@@ -1,0 +1,37 @@
+@echo off
+REM Podman Windows Service Installation via NSSM
+REM NOTE: Podman on Windows requires WSL2 or Podman Machine.
+REM       This script wraps `podman machine start` as a startup service.
+REM Run as Administrator
+
+set SERVICE_NAME=podman
+set DISPLAY_NAME=Podman Container Engine
+set DESCRIPTION=Daemonless container engine for OCI containers (via Podman Machine)
+set EXECUTABLE=C:\Program Files\RedHat\Podman\podman.exe
+set APPDIRECTORY=C:\Program Files\RedHat\Podman
+set LOG_DIRECTORY=C:\ProgramData\podman\logs
+
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+nssm install %SERVICE_NAME% "%EXECUTABLE%" "machine start"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\podman-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\podman-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.
+echo Start with: nssm start %SERVICE_NAME%
+echo Stop with : nssm stop %SERVICE_NAME%
+echo.
+echo Note: Requires Podman Desktop installed and a Podman machine initialized.
+echo Run first: podman machine init

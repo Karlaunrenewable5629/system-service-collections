@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+name="podman"
+description="Podman API Socket"
+
+command="/usr/bin/podman"
+command_args="system service --time=0 unix:///run/podman/podman.sock"
+command_background=true
+pidfile="/run/podman/podman.pid"
+output_log="/var/log/podman.log"
+error_log="/var/log/podman.log"
+
+depend() {
+    need net
+    need localmount
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --mode 0750 /run/podman
+}
