@@ -23,6 +23,19 @@ Caddy is a powerful, enterprise-ready, open source web server with automatic HTT
 - A domain name (for automatic HTTPS)
 - Ports 80 and 443 open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Caddy]
+    B --> C[HTTP Server]
+    B --> D[HTTPS / TLS]
+    B --> E[Reverse Proxy]
+    C --> F[Static Files]
+    E --> G[Upstream Servers]
+
+```
+
 ## Structure
 
 ```
