@@ -1,0 +1,28 @@
+#!/sbin/openrc-run
+
+name="kong"
+description="Kong API Gateway"
+
+command="/usr/local/bin/kong"
+command_args="start -c /etc/kong/kong.conf"
+command_background=true
+pidfile="/run/kong/kong.pid"
+required_files="/etc/kong/kong.conf"
+
+depend() {
+    need net
+    need postgresql
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner kong:kong --mode 0755 /run/kong
+    checkpath --directory --owner kong:kong --mode 0755 /var/lib/kong
+    checkpath --directory --owner kong:kong --mode 0755 /var/log/kong
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/local/bin/kong quit -c /etc/kong/kong.conf 2>/dev/null || true
+    eend $?
+}

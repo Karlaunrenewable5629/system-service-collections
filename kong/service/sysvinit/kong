@@ -1,0 +1,57 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          kong
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Kong API Gateway
+# Description:       Kong is a cloud-native API Gateway
+### END INIT INFO
+
+NAME=kong
+DAEMON=/usr/local/bin/kong
+CONFIG=/etc/kong/kong.conf
+PIDFILE=/run/kong/kong.pid
+USER=kong
+GROUP=kong
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/kong /var/lib/kong /var/log/kong
+    chown -R $USER:$GROUP /run/kong /var/lib/kong /var/log/kong
+    start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- start -c $CONFIG
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    $DAEMON quit -c $CONFIG 2>/dev/null || true
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac

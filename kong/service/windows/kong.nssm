@@ -1,0 +1,32 @@
+@echo off
+REM Kong Windows Service Installation via NSSM
+
+set SERVICE_NAME=kong
+set DISPLAY_NAME=Kong API Gateway
+set DESCRIPTION=Kong is a cloud-native, fast, scalable API Gateway
+set EXECUTABLE=C:\kong\kong
+set APPDIRECTORY=C:\kong
+set CONFIG_FILE=C:\kong\kong.conf
+set LOG_DIRECTORY=C:\kong\logs
+
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+nssm install %SERVICE_NAME% "%EXECUTABLE%" "start"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\kong-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\kong-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% ObjectName "NT AUTHORITY\NetworkService"
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.

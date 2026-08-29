@@ -1,0 +1,22 @@
+[Unit]
+Description=Kong API Gateway
+Documentation=https://docs.konghq.com/
+After=network.target network-online.target postgresql.service
+Requires=network-online.target
+
+[Service]
+Type=notify
+User=kong
+Group=kong
+ExecStart=/usr/local/bin/kong start -c /etc/kong/kong.conf
+ExecStop=/usr/local/bin/kong quit -c /etc/kong/kong.conf
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+LimitNPROC=4096
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
