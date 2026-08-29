@@ -19,7 +19,17 @@ Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. It provi
 - Linux with systemd, OpenRC, or SysVinit, or Windows 10/11 / Server 2016+ with NSSM
 - Root or sudo privileges
 - Port 3000 (app), 9229 (debug)
-- Node.js installed on the system
+- Node.js installed
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Node.js]
+    B --> C[Server-side JavaScript]
+    B --> D[Network Applications]
+    C --> D
+```
 
 ## Structure
 
