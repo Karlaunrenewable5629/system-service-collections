@@ -1,0 +1,22 @@
+[Unit]
+Description=Envoy Proxy
+Documentation=https://www.envoyproxy.io/docs/
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+Type=simple
+User=envoy
+Group=envoy
+ExecStart=/usr/local/bin/envoy -c /etc/envoy/envoy.yaml --service-node $(hostname) --service-cluster envoy
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=1048576
+LimitNPROC=65536
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

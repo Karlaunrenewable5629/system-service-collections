@@ -1,0 +1,33 @@
+@echo off
+REM Envoy Windows Service Installation via NSSM
+REM Run as Administrator
+
+set SERVICE_NAME=envoy
+set DISPLAY_NAME=Envoy Proxy
+set DESCRIPTION=Envoy is a high-performance, C++ built proxy
+set EXECUTABLE=C:\envoy\envoy.exe
+set APPDIRECTORY=C:\envoy
+set CONFIG_FILE=C:\envoy\envoy.yaml
+set LOG_DIRECTORY=C:\envoy\logs
+
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+nssm install %SERVICE_NAME% "%EXECUTABLE%" "-c %CONFIG_FILE%"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\envoy-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\envoy-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% ObjectName "NT AUTHORITY\NetworkService"
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.

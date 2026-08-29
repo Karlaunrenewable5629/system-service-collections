@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="envoy"
+description="Envoy Proxy"
+
+command="/usr/local/bin/envoy"
+command_args="-c /etc/envoy/envoy.yaml --service-node $(hostname) --service-cluster envoy"
+command_background=true
+pidfile="/run/envoy/envoy.pid"
+required_files="/etc/envoy/envoy.yaml"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner envoy:envoy --mode 0755 /run/envoy
+    checkpath --directory --owner envoy:envoy --mode 0755 /var/log/envoy
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    kill $(cat $pidfile 2>/dev/null) 2>/dev/null || true
+    eend $?
+}
