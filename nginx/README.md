@@ -19,6 +19,18 @@ nginx [engine x] is a high-performance web server and reverse proxy server. It c
 - **Health Checks** - Automatic upstream health monitoring
 - **Dynamic Configuration** - Reload configuration without downtime
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Nginx]
+    B --> C[Reverse Proxy]
+    B --> D[HTTP Server]
+    B --> E[Load Balancer]
+    C --> E[Upstream Servers]
+    D --> F[Static Content]
+```
+
 ## Structure
 
 ```
