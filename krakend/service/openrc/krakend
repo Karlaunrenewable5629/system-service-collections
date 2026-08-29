@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="krakend"
+description="Krakend API Gateway"
+command="/usr/local/bin/krakend"
+command_args="run -d -c /etc/krakend/krakend.json"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+required_files="/etc/krakend/krakend.json"
+
+: ${krakend_user:="krakend"}
+: ${krakend_group:="krakend"}
+
+command_user="${krakend_user}:${krakend_group}"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f \
+        -d "${krakend_user}:${krakend_group}" \
+        /run
+}

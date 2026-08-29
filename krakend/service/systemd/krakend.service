@@ -1,0 +1,18 @@
+[Unit]
+Description=Krakend API Gateway
+Documentation=https://www.krakend.io/docs/
+After=network.target
+
+[Service]
+Type=simple
+User=krakend
+Group=krakend
+ExecStart=/usr/local/bin/krakend run -d -c /etc/krakend/krakend.json
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+; Krakend NSSM service configuration
+; Usage: nssm set krakend AppParameters "run -d -c C:\etc\krakend\krakend.json"
+; Or import this file directly with nssm install krakend
+
+AppName   krakend
+DisplayName  Krakend API Gateway
+Description  Ultra-fast API Gateway built on Go
+Executable  C:\usr\local\bin\krakend.exe
+AppParameters  run -d -c C:\etc\krakend\krakend.json
+AppDirectory  C:\usr\local\bin
+Start   SERVICE_AUTO_START
+ErrorControl  SERVICE_ERROR_NORMAL
+ObjectType  ownProcess
