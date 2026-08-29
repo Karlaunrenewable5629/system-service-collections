@@ -1,0 +1,53 @@
+# Salt Minion Configuration
+
+## minion config
+
+The main configuration file is `/etc/salt/minion`. It uses INI-style format for salt minion settings.
+
+### Default Configuration
+
+```ini
+# Master configuration
+master: salt
+
+# Interface configuration
+interface: 0.0.0.0
+disable_ring: True
+
+# Keepalive configuration
+keepalive_interval: 30
+keepalive_max_retries: 3
+
+# Cache configuration
+cache: file
+compression: zlib
+
+# Log configuration
+log_level: info
+log_file: /var/log/salt/minion
+
+# Root directory
+root_dir: /etc/salt
+```
+
+### Master Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `master` | Salt master hostname/IP | - |
+| `master_port` | Master port | 4505 |
+| `mine` | Enable data minning | - |
+
+### File Locations
+
+| System | Config Path |
+|--------|-------------|
+| Linux (systemd) | `/etc/salt/minion` |
+| Windows | `C:\salt\minion.conf` |
+
+### Services Related
+
+The salt minion works alongside:
+- `salt-master` - The central coordination point
+- `salt-api` - REST API for salt
+- `salt-syndic` - Hierarchical salt deployment
