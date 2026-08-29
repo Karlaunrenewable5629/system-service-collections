@@ -1,0 +1,42 @@
+# Woodpecker CI Configuration
+
+## Server Configuration
+
+```yaml
+server:
+  # Web server configuration
+  addr: ":80"
+  domain: "ci.example.com"
+
+  # Use HTTPS with Let's Encrypt
+  # tls:
+  #   autoup: true
+  #   certfile: "/etc/letsencrypt/live/ci.example.com/fullchain.pem"
+  #   keyfile: "/etc/letsencrypt/live/ci.example.com/privkey.pem"
+
+# Database Configuration
+database:
+  # Supported: postgres, sqlite3
+  driver: "postgres"
+  source: "postgres://user:password@localhost:5432/woodpecker?sslmode=disable"
+
+  # Alternative: sqlite3
+  # source: "/var/lib/woodpecker/woodpecker.sqlite"
+
+# Runner Configuration
+runner:
+  # Default runner type
+  type: "ssh"
+
+  # SSH runner configuration
+  ssh:
+    # Address of the runner daemon
+    addr: "localhost:3000"
+
+  # Docker runner configuration
+  docker:
+    # Image to use for builds
+    image: "drone/drone:latest"
+
+    # Privileged mode
+    # privileged: false
