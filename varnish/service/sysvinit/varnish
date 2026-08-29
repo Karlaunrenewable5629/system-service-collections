@@ -1,0 +1,91 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          varnish
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Varnish Cache - high performance HTTP accelerator
+# Description:       Starts/stops the Varnish daemon
+### END INIT INFO
+
+NAME=varnish
+DAEMON=/usr/sbin/varnishd
+DAEMON_OPTS="-a :6081 -b 127.0.0.1:8080 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m"
+PIDFILE=/run/varnishd.pid
+CONFIG=/etc/varnish/default.vcl
+SECRET=/etc/varnish/secret
+VARNISH_USER=varnish
+VARNISH_GROUP=varnish
+
+set -e
+
+. /lib/lsb/init-functions
+
+test -x $DAEMON || exit 0
+test -f $CONFIG || exit 0
+test -f $SECRET || exit 0
+
+start_varnish() {
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        log_progress_msg "$NAME is already running."
+        log_end_msg 0
+        return 0
+    fi
+    log_daemon_msg "Starting $NAME" "$NAME"
+    start-stop-daemon --start --quiet --chuid "$VARNISH_USER:$VARNISH_GROUP" --exec $DAEMON -- $DAEMON_OPTS
+    log_end_msg $?
+}
+
+stop_varnish() {
+    if [ ! -f "$PIDFILE" ]; then
+        log_progress_msg "$NAME is not running."
+        log_end_msg 0
+        return 0
+    fi
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile "$PIDFILE" --signal WINCH
+    log_end_msg $?
+}
+
+reload_varnish() {
+    if [ ! -f "$PIDFILE" ]; then
+        log_progress_msg "$NAME is not running."
+        log_end_msg 0
+        return 0
+    fi
+    log_daemon_msg "Reloading $NAME" "$NAME"
+    start-stop-daemon --stop --signal HUP --pidfile "$PIDFILE"
+    log_end_msg $?
+}
+
+case "$1" in
+  start)
+    start_varnish
+    ;;
+  stop)
+    stop_varnish
+    ;;
+  restart|force-reload)
+    stop_varnish
+    sleep 1
+    start_varnish
+    ;;
+  reload)
+    reload_varnish
+    ;;
+  status)
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+        log_success_msg "$NAME is running (PID $(cat "$PIDFILE"))."
+    else
+        log_failure_msg "$NAME is not running."
+        exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload|reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

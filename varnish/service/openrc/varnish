@@ -1,0 +1,47 @@
+#!/sbin/openrc-run
+
+name="varnish"
+description="Varnish Cache - high performance HTTP accelerator"
+command=/usr/sbin/varnishd
+command_args="-a :6081 -b 127.0.0.1:8080 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m"
+pidfile=/run/varnishd.pid
+command_background=yes
+command_foreground=no
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f -o varnish:varnish "${pidfile}"
+    checkpath -d -o varnish:varnish /var/lib/varnish
+    checkpath -d -o varnish:varnish /var/log/varnish
+    /usr/sbin/varnishd -C -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m -a :6081 -b 127.0.0.1:8080 || return 1
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal WINCH
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading ${name}"
+    start-stop-daemon --stop --signal HUP --pidfile "${pidfile}"
+    eend $?
+}
+
+restart() {
+    ebegin "Restarting ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal WINCH
+    sleep 1
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}

@@ -1,0 +1,27 @@
+[Unit]
+Description=Varnish Cache - high performance HTTP accelerator
+Documentation=https://varnish-cache.org/docs/
+After=network-online.target remote-fs.target nss-lookup-target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=varnish
+Group=varnish
+PIDFile=/run/varnishd.pid
+ExecStartPre=/usr/sbin/varnishd -C -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m -a :6081 -b 127.0.0.1:8080
+ExecStart=/usr/sbin/varnishd -a :6081 -b 127.0.0.1:8080 -f /etc/varnish/default.vcl -S /etc/varnish/secret -s malloc,256m
+ExecReload=/usr/sbin/varnishreload
+ExecStop=/bin/kill -s WINCH $MAINPID
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=10s
+KillMode=mixed
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/varnish /var/log/varnish /run /etc/varnish
+
+[Install]
+WantedBy=multi-user.target
