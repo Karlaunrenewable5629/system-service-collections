@@ -12,6 +12,19 @@ System service collection for [Krakend](https://www.krakend.io), the ultra-fast 
 - **CORS** — Cross-origin resource sharing support
 - **JWT validation** — Authentication and authorization via JSON Web Tokens
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Krakend]
+    B --> C[API Gateway]
+    B --> D[Rate Limiting]
+    B --> E[Caching]
+    B --> F[Circuit Breaker]
+    E --> C
+    F --> C
+```
+
 ## Structure
 
 - `install/` — Installation scripts and guides
