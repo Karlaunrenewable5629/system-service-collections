@@ -1,0 +1,61 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          ollama
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Ollama - Local LLM Server
+# Description:       Ollama provides local LLM inference server
+### END INIT INFO
+
+NAME=ollama
+DESC="Ollama - Local LLM Server"
+DAEMON=/usr/local/bin/ollama
+DAEMON_ARGS="serve"
+USER=ollama
+GROUP=ollama
+PIDFILE=/var/run/ollama/ollama.pid
+LOGFILE=/var/log/ollama/ollama.log
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $DESC" "$NAME"
+    if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE) 2>/dev/null; then
+        log_progress_msg "already running"
+        log_end_msg 0
+        return 0
+    fi
+    
+    mkdir -p /var/run/ollama /var/log/ollama
+    chown $USER:$GROUP /var/run/ollama /var/log/ollama
+    
+    start-stop-daemon --start --quiet --background \
+        --pidfile $PIDFILE --make-pidfile \
+        --chuid $USER:$GROUP \
+        --exec $DAEMON -- $DAEMON_ARGS >> $LOGFILE 2>&1
+    
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 30
+    log_end_msg $?
+    rm -f $PIDFILE
+}
+
+status() {
+    status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+}
+
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    restart|force-reload) stop; start ;;
+    status) status ;;
+    *) echo "Usage: $0 {start|stop|restart|force-reload|status}"; exit 1 ;;
+esac
+
+exit 0

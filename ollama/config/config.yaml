@@ -1,0 +1,33 @@
+# Ollama Configuration
+# Reference: https://github.com/ollama/ollama/blob/main/docs/modelfile.md
+
+server:
+  host: "0.0.0.0"
+  port: 11434
+  origins: ["*"]
+  keep_alive: "5m"
+
+models:
+  path: "/var/lib/ollama/models"
+  cache_size: "10GB"
+
+gpu:
+  enabled: true
+  layers: -1
+  main_gpu: 0
+  split_mode: "layer"
+
+logging:
+  level: "info"
+  format: "text"
+  file: "/var/log/ollama/ollama.log"
+
+api:
+  cors_enabled: true
+  max_request_size: "100MB"
+
+performance:
+  num_parallel: 4
+  max_queue_size: 512
+  flash_attention: true
+  kv_cache_type: "f16"

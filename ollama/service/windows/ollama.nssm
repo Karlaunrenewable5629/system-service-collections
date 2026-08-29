@@ -1,0 +1,18 @@
+# Ollama Windows Service Configuration (NSSM)
+# Save as ollama.nssm and run: nssm install ollama < ollama.nssm
+
+Application: C:\ollama\ollama.exe
+AppParameters: serve
+AppDirectory: C:\opt\ollama
+DisplayName: Ollama LLM Server
+Description: Local LLM Server - Run LLMs locally on Windows
+Start: SERVICE_AUTO_START
+Type: SERVICE_WIN32_OWN_PROCESS
+ErrorControl: SERVICE_ERROR_NORMAL
+ObjectName: NT AUTHORITY\NetworkService
+Environment: OLLAMA_HOST=0.0.0.0:11434;OLLAMA_MODELS=C:\var\lib\ollama\models
+StdOutput: C:\var\log\ollama\ollama-out.log
+StdError: C:\var\log\ollama\ollama-err.log
+RotateFiles: 1
+RotateBytes: 10485760
+RotateSeconds: 86400

@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+# Ollama OpenRC init script
+
+name="ollama"
+description="Ollama - Local LLM Server"
+command="/usr/local/bin/ollama"
+command_args="serve"
+command_user="ollama:ollama"
+pidfile="/run/ollama/ollama.pid"
+directory="/var/lib/ollama"
+
+depend() {
+    need net
+    after firewall
+    use logger dns
+}
+
+start_pre() {
+    checkpath -d -m 0755 -o ollama:ollama /run/ollama
+    checkpath -d -m 0750 -o ollama:ollama /var/lib/ollama /var/log/ollama
+}
+
+stop_post() {
+    rm -f /run/ollama/ollama.pid
+}

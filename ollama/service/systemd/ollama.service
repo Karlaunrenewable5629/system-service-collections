@@ -1,0 +1,40 @@
+[Unit]
+Description=Ollama - Local LLM Server
+Documentation=https://github.com/ollama/ollama
+After=network.target
+Wants=network.target
+
+[Service]
+Type=exec
+User=ollama
+Group=ollama
+EnvironmentFile=-/etc/ollama/environment
+ExecStart=/usr/local/bin/ollama serve
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ollama /var/log/ollama /etc/ollama
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryLimit=8G
+CPUQuota=400%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ollama
+
+[Install]
+WantedBy=multi-user.target
