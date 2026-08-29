@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Apache Tomcat Server Configuration
+  Path: /etc/tomcat/server.xml
+-->
+<Server port="8005" shutdown="SHUTDOWN">
+
+  <!-- Security Listener -->
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+
+  <!-- Global JNDI Resources -->
+  <GlobalNamingResources>
+    <Environment name="simpleValue" type="java.lang.Integer" value="30" />
+    <Resource name="UserDatabase"
+              auth="Container"
+              type="org.apache.catalina.UserDatabase"
+              description="User database that can be updated and saved"
+              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+              pathname="conf/tomcat-users.xml" />
+  </GlobalNamingResources>
+
+  <!-- Service -->
+  <Service name="Catalina">
+
+    <!-- Connector (HTTP) -->
+    <Connector port="8080"
+               protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443"
+               address="0.0.0.0"
+               maxThreads="200"
+               minSpareThreads="25"
+               maxSpareThreads="75"
+               maxConnections="10000"
+               acceptCount="100"
+               compression="on"
+               compressionMinSize="2048"
+               noCompressionUserAgents="gozilla,traviata"
+               compressableMimeType="text/html,text/xml,text/plain,text/css,application/json,application/javascript" />
+
+    <!-- Connector (HTTPS) -->
+    <Connector port="8443"
+               protocol="org.apache.coyote.http11.Http11NioProtocol"
+               maxThreads="200"
+               minSpareThreads="25"
+               SSLEnabled="true"
+               scheme="https"
+               secure="true"
+               keystoreFile="/etc/tomcat/ssl/keystore.jks"
+               keystorePass="changeit"
+               clientAuth="false"
+               sslProtocol="TLS"
+               sslEnabledProtocols="TLSv1.2,TLSv1.3" />
+
+    <!-- Engine -->
+    <Engine name="Catalina" defaultHost="localhost">
+
+      <!-- Realm -->
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase" />
+      </Realm>
+
+      <!-- Host -->
+      <Host name="localhost"
+            appBase="webapps"
+            unpackWARS="true"
+            autoDeploy="true">
+
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="logs"
+               prefix="localhost_access_log"
+               suffix=".txt"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+
+        <Context path="" docBase="ROOT" reloadable="false">
+        </Context>
+      </Host>
+
+      <!-- Cluster (optional) -->
+      <!--
+      <Cluster className="org.apache.catalina.ha.tcp.SimpleTcpCluster">
+        <Channel className="org.apache.catalina.tribes.group.GroupChannel">
+          <Membership className="org.apache.catalina.tribes.membership.McastService"
+                      address="228.0.0.4"
+                      port="45564"
+                      frequency="500"
+                      dropTime="3000" />
+          <Receiver className="org.apache.catalina.tribes.transport.nio.NioReceiver"
+                    address="auto"
+                    port="4000"
+                    autoBind="100"
+                    selectorTimeout="5000"
+                    maxThreads="6" />
+        </Channel>
+        <EngineListener className="org.apache.catalina.ha.ClusterListener" />
+      </Cluster>
+      -->
+
+    </Engine>
+  </Service>
+</Server>
