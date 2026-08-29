@@ -1,0 +1,42 @@
+{
+  "bind": ":3000",
+  "mysql": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "user": "semaphore",
+    "pass": "semaphore_password",
+    "name": "semaphore"
+  },
+  "postgres": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "user": "semaphore",
+    "pass": "semaphore_password",
+    "name": "semaphore",
+    "sslmode": "disable"
+  },
+  "max_parallel_tasks": 10,
+  "tmp_path": "/tmp/semaphore",
+  "ssh_key_path": "/var/lib/semaphore/.ssh",
+  "ansible": {
+    "playbook_path": "/usr/bin/ansible-playbook"
+  },
+  "terraform": {
+    "path": "/usr/bin/terraform"
+  },
+  "email": {
+    "host": "smtp.example.com",
+    "port": 587,
+    "user": "semaphore@example.com",
+    "pass": "email_password",
+    "from": "semaphore@example.com"
+  },
+  "telegram": {
+    "token": "",
+    "chat": ""
+  },
+  "slack": {
+    "token": "",
+    "channel": ""
+  }
+}
