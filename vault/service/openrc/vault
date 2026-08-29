@@ -1,0 +1,57 @@
+#!/sbin/openrc-run
+# =============================================================================
+# HashiCorp Vault - OpenRC Init Script
+# =============================================================================
+# Installation:
+#   sudo cp vault /etc/init.d/vault
+#   sudo chmod +x /etc/init.d/vault
+#   sudo rc-update add vault default
+#   sudo rc-service vault start
+
+name="vault"
+description="HashiCorp Vault - Secret Management Service"
+
+VAULT_USER="${VAULT_USER:-vault}"
+VAULT_GROUP="${VAULT_GROUP:-vault}"
+VAULT_CONFIG="${VAULT_CONFIG:-/etc/vault.d/vault.hcl}"
+VAULT_LOG="${VAULT_LOG:-/var/log/vault/vault.log}"
+VAULT_PID="${VAULT_PID:-/run/vault/vault.pid}"
+VAULT_ENV="${VAULT_ENV:-/etc/vault.d/vault.env}"
+
+command="/usr/bin/vault"
+command_args="server -config=${VAULT_CONFIG}"
+command_user="${VAULT_USER}:${VAULT_GROUP}"
+command_background=true
+
+pidfile="${VAULT_PID}"
+start_stop_daemon_args="--make-pidfile"
+
+output_log="${VAULT_LOG}"
+error_log="${VAULT_LOG}"
+
+# Load optional environment file
+[ -f "${VAULT_ENV}" ] && . "${VAULT_ENV}"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    # Create runtime directories if they don't exist
+    local pid_dir
+    pid_dir="$(dirname "${VAULT_PID}")"
+
+    checkpath --directory --owner "${VAULT_USER}:${VAULT_GROUP}" --mode 0755 "${pid_dir}"
+    checkpath --directory --owner "${VAULT_USER}:${VAULT_GROUP}" --mode 0750 "$(dirname "${VAULT_LOG}")"
+
+    if [ ! -f "${VAULT_CONFIG}" ]; then
+        eerror "Configuration file not found: ${VAULT_CONFIG}"
+        return 1
+    fi
+}
+
+stop_post() {
+    # Remove stale PID file if it exists after stopping
+    rm -f "${VAULT_PID}"
+}

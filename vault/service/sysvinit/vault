@@ -1,0 +1,161 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          vault
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: HashiCorp Vault
+# Description:       HashiCorp Vault - Secret Management Service
+### END INIT INFO
+
+# =============================================================================
+# HashiCorp Vault - SysVinit Init Script
+# =============================================================================
+# Installation:
+#   sudo cp vault /etc/init.d/vault
+#   sudo chmod +x /etc/init.d/vault
+#   sudo update-rc.d vault defaults   # Debian/Ubuntu
+#   sudo chkconfig vault on           # RHEL/CentOS
+#   sudo service vault start
+
+# Source LSB functions
+. /lib/lsb/init-functions 2>/dev/null || true
+
+# --- Configuration -----------------------------------------------------------
+NAME="vault"
+DESC="HashiCorp Vault - Secret Management Service"
+DAEMON="/usr/bin/vault"
+DAEMON_ARGS="server -config=/etc/vault.d/vault.hcl"
+VAULT_USER="vault"
+VAULT_GROUP="vault"
+PID_FILE="/run/vault/vault.pid"
+LOG_FILE="/var/log/vault/vault.log"
+ENV_FILE="/etc/vault.d/vault.env"
+LOCK_FILE="/var/lock/subsys/vault"
+
+# Load defaults / overrides
+[ -f /etc/default/vault ] && . /etc/default/vault
+
+# Load environment file
+[ -f "${ENV_FILE}" ] && . "${ENV_FILE}"
+
+# --- Sanity Checks -----------------------------------------------------------
+[ -x "${DAEMON}" ] || { echo "${DAEMON} not found or not executable"; exit 5; }
+[ -f /etc/vault.d/vault.hcl ] || { echo "Config file /etc/vault.d/vault.hcl not found"; exit 6; }
+
+# --- Functions ---------------------------------------------------------------
+do_start() {
+    # Ensure PID directory exists
+    local pid_dir
+    pid_dir="$(dirname "${PID_FILE}")"
+    if [ ! -d "${pid_dir}" ]; then
+        mkdir -p "${pid_dir}"
+        chown "${VAULT_USER}:${VAULT_GROUP}" "${pid_dir}"
+    fi
+
+    # Ensure log directory exists
+    local log_dir
+    log_dir="$(dirname "${LOG_FILE}")"
+    if [ ! -d "${log_dir}" ]; then
+        mkdir -p "${log_dir}"
+        chown "${VAULT_USER}:${VAULT_GROUP}" "${log_dir}"
+        chmod 755 "${log_dir}"
+    fi
+
+    # Check if already running
+    if [ -f "${PID_FILE}" ] && kill -0 "$(cat "${PID_FILE}")" 2>/dev/null; then
+        log_warning_msg "${NAME} is already running."
+        return 1
+    fi
+
+    log_daemon_msg "Starting ${DESC}" "${NAME}"
+
+    start-stop-daemon \
+        --start \
+        --quiet \
+        --make-pidfile \
+        --pidfile "${PID_FILE}" \
+        --chuid "${VAULT_USER}:${VAULT_GROUP}" \
+        --background \
+        --no-close \
+        --exec "${DAEMON}" -- ${DAEMON_ARGS} \
+        >> "${LOG_FILE}" 2>&1
+
+    local retval=$?
+    if [ ${retval} -eq 0 ]; then
+        log_end_msg 0
+        [ -d /var/lock/subsys ] && touch "${LOCK_FILE}"
+    else
+        log_end_msg 1
+    fi
+    return ${retval}
+}
+
+do_stop() {
+    log_daemon_msg "Stopping ${DESC}" "${NAME}"
+
+    start-stop-daemon \
+        --stop \
+        --quiet \
+        --pidfile "${PID_FILE}" \
+        --signal INT \
+        --retry 30
+
+    local retval=$?
+    if [ ${retval} -eq 0 ] || [ ${retval} -eq 1 ]; then
+        log_end_msg 0
+        rm -f "${PID_FILE}" "${LOCK_FILE}"
+    else
+        log_end_msg 1
+    fi
+    return ${retval}
+}
+
+do_reload() {
+    log_daemon_msg "Reloading ${DESC}" "${NAME}"
+    if [ -f "${PID_FILE}" ]; then
+        kill -HUP "$(cat "${PID_FILE}")" 2>/dev/null
+        log_end_msg $?
+    else
+        log_end_msg 1
+        log_warning_msg "${NAME} is not running."
+    fi
+}
+
+do_status() {
+    if [ -f "${PID_FILE}" ] && kill -0 "$(cat "${PID_FILE}")" 2>/dev/null; then
+        log_success_msg "${NAME} is running (PID: $(cat "${PID_FILE}"))"
+        return 0
+    else
+        log_failure_msg "${NAME} is not running."
+        return 1
+    fi
+}
+
+# --- Entry Point -------------------------------------------------------------
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        ;;
+    restart|force-reload)
+        do_stop
+        sleep 1
+        do_start
+        ;;
+    reload)
+        do_reload
+        ;;
+    status)
+        do_status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|force-reload|status}" >&2
+        exit 3
+        ;;
+esac
+
+exit $?

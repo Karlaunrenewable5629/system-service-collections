@@ -1,0 +1,149 @@
+# =============================================================================
+# HashiCorp Vault — Windows Service Configuration (NSSM)
+# =============================================================================
+# This file documents the NSSM commands to install and manage Vault as a
+# Windows service using NSSM (Non-Sucking Service Manager).
+#
+# Prerequisites:
+#   - Vault binary installed (e.g., C:\Vault\bin\vault.exe)
+#   - NSSM installed and available in PATH
+#     Download: https://nssm.cc/download
+#   - Run all commands in an elevated (Administrator) PowerShell session
+#
+# Usage:
+#   powershell -ExecutionPolicy Bypass -File vault.nssm
+# =============================================================================
+
+# --- Configuration -----------------------------------------------------------
+
+$ServiceName  = "vault"
+$DisplayName  = "HashiCorp Vault"
+$Description  = "HashiCorp Vault - Secret Management Service"
+
+$VaultBin     = "C:\Vault\bin\vault.exe"
+$VaultArgs    = "server -config=C:\Vault\config\vault.hcl"
+$VaultDir     = "C:\Vault"
+$VaultConfig  = "C:\Vault\config\vault.hcl"
+$VaultData    = "C:\Vault\data"
+$VaultLog     = "C:\Vault\logs"
+
+$StdoutLog    = "$VaultLog\vault-stdout.log"
+$StderrLog    = "$VaultLog\vault-stderr.log"
+
+# --- Verify prerequisites ----------------------------------------------------
+
+if (-not (Get-Command "nssm" -ErrorAction SilentlyContinue)) {
+    Write-Error "NSSM not found in PATH. Download from https://nssm.cc/download and add to PATH."
+    exit 1
+}
+
+if (-not (Test-Path $VaultBin)) {
+    Write-Error "Vault binary not found at: $VaultBin"
+    Write-Host "Download from: https://releases.hashicorp.com/vault/"
+    exit 1
+}
+
+if (-not (Test-Path $VaultConfig)) {
+    Write-Warning "Config file not found at: $VaultConfig"
+    Write-Host "Copy and edit config\vault.hcl to $VaultConfig before starting the service."
+}
+
+# --- Create directories ------------------------------------------------------
+
+foreach ($dir in @($VaultData, $VaultLog)) {
+    if (-not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Force -Path $dir | Out-Null
+        Write-Host "Created directory: $dir"
+    }
+}
+
+# --- Remove existing service (if reinstalling) --------------------------------
+
+$existing = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+if ($existing) {
+    Write-Host "Removing existing service: $ServiceName"
+    if ($existing.Status -eq "Running") {
+        nssm stop $ServiceName confirm
+    }
+    nssm remove $ServiceName confirm
+    Start-Sleep -Seconds 2
+}
+
+# --- Install service ---------------------------------------------------------
+
+Write-Host "Installing Vault as a Windows service..."
+
+nssm install $ServiceName $VaultBin $VaultArgs
+
+# --- Configure service -------------------------------------------------------
+
+# Display name and description
+nssm set $ServiceName DisplayName  $DisplayName
+nssm set $ServiceName Description  $Description
+
+# Working directory
+nssm set $ServiceName AppDirectory $VaultDir
+
+# Startup type: SERVICE_AUTO_START
+nssm set $ServiceName Start SERVICE_AUTO_START
+
+# Stdout and stderr logging
+nssm set $ServiceName AppStdout    $StdoutLog
+nssm set $ServiceName AppStderr    $StderrLog
+
+# Log rotation: rotate when log exceeds 10 MB
+nssm set $ServiceName AppStdoutCreationDisposition 4
+nssm set $ServiceName AppStderrCreationDisposition 4
+nssm set $ServiceName AppRotateFiles 1
+nssm set $ServiceName AppRotateOnline 1
+nssm set $ServiceName AppRotateBytes 10485760
+
+# Restart policy: restart on failure after 5 seconds
+nssm set $ServiceName AppExit Default Restart
+nssm set $ServiceName AppRestartDelay 5000
+
+# Stop method: send Ctrl+C first, then wait 30s before terminating
+nssm set $ServiceName AppStopMethodConsole 30000
+nssm set $ServiceName AppStopMethodWindow  0
+nssm set $ServiceName AppStopMethodThreads 0
+
+# Environment variables
+nssm set $ServiceName AppEnvironmentExtra `
+    "VAULT_ADDR=http://127.0.0.1:8200" `
+    "HOME=$VaultDir"
+
+# --- Start the service -------------------------------------------------------
+
+Write-Host "Starting Vault service..."
+nssm start $ServiceName
+
+Start-Sleep -Seconds 3
+
+# --- Verify ------------------------------------------------------------------
+
+$svc = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+if ($svc -and $svc.Status -eq "Running") {
+    Write-Host ""
+    Write-Host "========================================================"
+    Write-Host "  Vault service installed and running successfully."
+    Write-Host "========================================================"
+    Write-Host "  Service name : $ServiceName"
+    Write-Host "  Binary       : $VaultBin"
+    Write-Host "  Config       : $VaultConfig"
+    Write-Host "  Data dir     : $VaultData"
+    Write-Host "  Logs         : $VaultLog"
+    Write-Host ""
+    Write-Host "  Management:"
+    Write-Host "    nssm status  $ServiceName"
+    Write-Host "    nssm stop    $ServiceName"
+    Write-Host "    nssm start   $ServiceName"
+    Write-Host "    nssm restart $ServiceName"
+    Write-Host ""
+    Write-Host "  Initialize Vault (first time only):"
+    Write-Host "    $env:VAULT_ADDR='http://127.0.0.1:8200'"
+    Write-Host "    vault operator init"
+    Write-Host "========================================================"
+} else {
+    Write-Warning "Service may not have started correctly. Check logs at: $VaultLog"
+    nssm status $ServiceName
+}
