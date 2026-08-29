@@ -23,6 +23,18 @@ FreeIPA is an integrated identity and authentication solution for Linux/UNIX net
 - A fully qualified domain name (FQDN) configured for the server
 - Ports 80, 443, 389, 636, 88, 464, 53 open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[FreeIPA]
+    B --> C[DNS]
+    B --> D[Certificate Authority]
+    B --> D[LDAP Directory]
+    B --> E[Kerberos]
+    B --> F[Network]
+```
+
 ## Structure
 
 ```
