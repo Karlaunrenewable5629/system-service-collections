@@ -1,0 +1,21 @@
+[Unit]
+Description=Semaphore UI - Ansible/Terraform Automation Platform
+Documentation=https://docs.ansible-semaphore.com/
+After=network.target mysql.service postgresql.service
+
+[Service]
+Type=simple
+User=semaphore
+Group=semaphore
+ExecStart=/usr/local/bin/semaphore server --config /etc/semaphore/config.json
+WorkingDirectory=/var/lib/semaphore
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+ProtectSystem=strict
+ReadWritePaths=/var/lib/semaphore /var/log/semaphore
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

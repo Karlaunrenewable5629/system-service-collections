@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+name="semaphore"
+description="Semaphore UI - Ansible/Terraform Automation Platform"
+
+command="/usr/local/bin/semaphore"
+command_args="server --config /etc/semaphore/config.json"
+command_background=true
+pidfile="/run/semaphore/semaphore.pid"
+required_files="/usr/local/bin/semaphore /etc/semaphore/config.json"
+
+depend() {
+    need net
+    after mysql postgresql
+}
+
+start_pre() {
+    checkpath --directory --owner semaphore:semaphore --mode 0755 /var/lib/semaphore
+    checkpath --directory --owner semaphore:semaphore --mode 0755 /var/log/semaphore
+    checkpath --directory --owner semaphore:semaphore --mode 0755 /run/semaphore
+}
