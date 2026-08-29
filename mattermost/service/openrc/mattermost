@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="mattermost"
+description="Mattermost Team Edition"
+
+command="/opt/mattermost/mattermost"
+command_background=true
+pidfile="/run/mattermost/mattermost.pid"
+command_timeout=30
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner mattermost:mattermost --mode 0755 /run/mattermost
+    checkpath --directory --owner mattermost:mattermost --mode 0755 /var/mattermost
+    checkpath --directory --owner mattermost:mattermost --mode 0755 /var/log/mattermost
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /opt/mattermost/mattermost stop
+    eend $?
+}

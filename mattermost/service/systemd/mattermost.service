@@ -1,0 +1,22 @@
+[Unit]
+Description=Mattermost Team Edition
+Documentation=https://mattermost.com/docs/
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mattermost
+Group=mattermost
+ExecStart=/opt/mattermost/mattermost
+WorkingDirectory=/opt/mattermost
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+ProtectSystem=strict
+ReadWritePaths=/var/mattermost /var/log/mattermost
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
