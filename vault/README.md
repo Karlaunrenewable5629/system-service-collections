@@ -23,6 +23,17 @@ HashiCorp Vault is a tool for securely accessing secrets. A secret is anything t
 - Port 8200 (API/UI) open
 - Storage backend: integrated Raft (recommended), Consul, or etcd
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Vault]
+    B --> C[API]
+    B --> D[UI]
+    C --> E[Storage Backend]
+    D --> E
+```
+
 ## Structure
 
 ```
