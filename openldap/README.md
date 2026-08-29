@@ -22,6 +22,15 @@ OpenLDAP is a free, open-source implementation of the Lightweight Directory Acce
 - Root or sudo privileges
 - Ports 389 (LDAP) and 636 (LDAPS) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[OpenLDAP]
+    B --> C[LDAP Directory]
+    B --> D[LDAPS]
+```
+
 ## Structure
 
 ```
