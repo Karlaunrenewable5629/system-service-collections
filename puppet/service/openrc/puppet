@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="puppet"
+description="Puppet Agent"
+
+command="/opt/puppetlabs/puppet/bin/puppet"
+command_args="agent --onetime --no-summarize --no-color"
+command_background=true
+pidfile="/run/puppet/puppet.pid"
+required_files="/opt/puppetlabs/puppet/bin/puppet /etc/puppetlabs/puppet/puppet.conf"
+start_pre() {
+    checkpath --directory --owner puppet:puppet --mode 0755 /var/lib/puppet
+    checkpath --directory --owner puppet:puppet --mode 0755 /var/log/puppet
+    checkpath --directory --owner puppet:puppet --mode 0755 /etc/puppetlabs/puppet
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /opt/puppetlabs/puppet/bin/puppet agent --shutdown
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

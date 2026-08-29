@@ -1,0 +1,59 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          puppet
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Puppet Agent
+# Description:       Configuration management agent
+### END INIT INFO
+
+NAME=puppet
+DAEMON=/opt/puppetlabs/puppet/bin/puppet
+CONFIG=/etc/puppetlabs/puppet/puppet.conf
+PIDFILE=/run/puppet/puppet.pid
+USER=puppet
+GROUP=puppet
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/puppet /var/lib/puppet /var/log/puppet
+    chown $USER:$GROUP /run/puppet /var/lib/puppet /var/log/puppet
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- --onetime --no-summarize --no-color
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    $DAEMON --test --no-summarize --no-color
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
