@@ -1,0 +1,34 @@
+tunnel: "<tunnel-id>"
+credentials-file: "/root/.cloudflared/<tunnel-id>.json"
+
+ingress:
+  - service: http://localhost:8080
+    autodns: true
+  - service: http://localhost:3000 when/hostname "app.example.com"
+    autodns: false
+  - service: http_status:404
+
+ingress_rules:
+  - identifier: "cloudflare-domain-matching"
+    action: "route"
+    domain: "example.com"
+    edge_certiface: "ssl"
+  - identifier: "cloudflare-domain-wildcard"
+    action: "route"
+    domain: "*.example.com"
+    edge_certiface: "ssl"
+  - identifier: "bypass"
+    action: "bypass"
+
+policy:
+  issuers:
+    - name: "Cloudflare Origin CA"
+      type: "origin_ca"
+  certificates:
+    - dns_challenge:
+        proxy: true
+      domain: "example.com"
+
+metrics: true
+logfile: "/var/log/cloudflared.log"
+edgeport: 2000
