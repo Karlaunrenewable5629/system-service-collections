@@ -24,6 +24,17 @@ Woodpecker CI is a self-hosted continuous integration system forked from Drone. 
 - A configured SCM (Gitea, GitHub, etc.) OAuth application
 - Ports 8000 (server UI/API) and 9000 (agent gRPC) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Developers] --> B[Woodpecker CI]
+    B --> C[Docker-based Builds]
+    B --> D[Pipeline as Code]
+    B --> E[SCM Integration]
+    C --> D
+```
+
 ## Structure
 
 ```
