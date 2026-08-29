@@ -1,0 +1,30 @@
+[Unit]
+Description=Apache Tomcat - Java Servlet Container
+Documentation=https://tomcat.apache.org/
+After=network-online.target remote-fs.target nss-lookup-target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+Environment=JAVA_HOME=/usr/lib/jvm/java
+Environment=CATALINA_HOME=/usr/local/tomcat
+Environment=CATALINA_BASE=/etc/tomcat
+ExecStart=/usr/local/tomcat/bin/catalina.sh start
+ExecStop=/usr/local/tomcat/bin/catalina.sh stop
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+KillMode=mixed
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/log/tomcat /run /var/lib/tomcat
+LimitNOFILE=65535
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,41 @@
+#!/sbin/openrc-run
+
+name="tomcat"
+description="Apache Tomcat - Java Servlet Container"
+command=/usr/local/tomcat/bin/catalina.sh
+command_args="start"
+command_background=yes
+pidfile=/run/tomcat/tomcat.pid
+command_foreground=no
+
+environment="JAVA_HOME=/usr/lib/jvm/java" "CATALINA_HOME=/usr/local/tomcat" "CATALINA_BASE=/etc/tomcat"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f -o tomcat:tomcat "${pidfile}"
+    checkpath -d -o tomcat:tomcat /var/log/tomcat
+    checkpath -d -o tomcat:tomcat /var/lib/tomcat
+    checkpath -d -o tomcat:tomcat /run/tomcat
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal TERM
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading ${name}"
+    /usr/local/tomcat/bin/catalina.sh reload
+    eend $?
+}

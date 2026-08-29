@@ -1,0 +1,77 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          tomcat
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Apache Tomcat - Java Servlet Container
+# Description:       Starts/stops the Apache Tomcat daemon
+### END INIT INFO
+
+NAME=tomcat
+DAEMON=/usr/local/tomcat/bin/catalina.sh
+DAEMON_OPTS="start"
+PIDFILE=/run/tomcat/tomcat.pid
+CONFIG=/etc/tomcat/server.xml
+TOMCAT_USER=tomcat
+TOMCAT_GROUP=tomcat
+JAVA_HOME=/usr/lib/jvm/java
+CATALINA_HOME=/usr/local/tomcat
+CATALINA_BASE=/etc/tomcat
+
+set -e
+
+. /lib/lsb/init-functions
+
+test -x $DAEMON || exit 0
+test -f $CONFIG || exit 0
+
+mkdir -p /run/tomcat /var/log/tomcat /var/lib/tomcat
+chown -R $TOMCAT_USER:$TOMCAT_GROUP /run/tomcat /var/log/tomcat /var/lib/tomcat
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $TOMCAT_USER:$TOMCAT_GROUP --exec $DAEMON -- $DAEMON_OPTS
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --signal TERM
+    log_end_msg $?
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|force-reload)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  reload)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  status)
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+      log_success_msg "$NAME is running (PID $(cat "$PIDFILE"))."
+    else
+      log_failure_msg "$NAME is not running."
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload|reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

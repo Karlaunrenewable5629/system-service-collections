@@ -1,0 +1,43 @@
+[Application]
+Path=C:\tomcat\bin\catalina.bat
+AppDirectory=C:\tomcat
+DisplayName=Apache Tomcat
+Description=Apache Tomcat - Java Servlet Container
+Start=auto
+
+[Parameters]
+CommandLineArgs=run
+AppParameters=run
+
+[Environment]
+JAVA_HOME=C:\Program Files\Java\jdk-21
+CATALINA_HOME=C:\tomcat
+CATALINA_BASE=C:\tomcat
+HOME=C:\tomcat
+
+[Paths]
+AppRotationTimeout=15000
+AppRestartDelay=2500
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+
+[Shutdown]
+ConsoleCtrlHandler=1
+WaitForProcessExit=60000
+KillAppTerminate=1
+KillProcessTimeout=2000
+
+[Output]
+AppStdout=C:\tomcat\logs\stdout.log
+AppStderr=C:\tomcat\logs\stderr.log
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+AppRotateTimeout=15000
+
+[Info]
+ServiceName=tomcat
+ServiceDisplayName=Apache Tomcat
+ServiceDescription=Apache Tomcat - Java Servlet Container
+ServiceType=own_process
+StartType=auto_start
+ErrorControl=normal
