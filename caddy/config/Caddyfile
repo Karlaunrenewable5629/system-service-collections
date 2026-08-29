@@ -1,0 +1,47 @@
+# Caddy Configuration File
+# Global options
+{
+    admin off
+    email admin@example.com
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 100mb
+            roll_keep 10
+            roll_keep_for 720h
+        }
+    }
+}
+
+# Default HTTP server
+:80 {
+    respond "Caddy is running!" 200
+}
+
+# HTTPS server example (requires valid domain)
+# example.com {
+#     root * /var/www/html
+#     file_server
+#     encode gzip zstd
+#     header {
+#         Strict-Transport-Security "max-age=31536000;"
+#         X-Content-Type-Options "nosniff"
+#         X-Frame-Options "DENY"
+#         Referrer-Policy "strict-origin-when-cross-origin"
+#     }
+# }
+
+# Reverse proxy example
+# api.example.com {
+#     reverse_proxy localhost:8080 {
+#         header_up Host {host}
+#         header_up X-Real-IP {remote}
+#         header_up X-Forwarded-For {remote}
+#         header_up X-Forwarded-Proto {scheme}
+#     }
+# }
+
+# Static file server example
+# files.example.com {
+#     root * /var/www/files
+#     file_server browse
+# }
