@@ -11,6 +11,18 @@ System service collection for traefik — a modern HTTP reverse proxy and load b
 - Metrics export (Prometheus, Datadog, StatsD)
 - Multi-platform support: systemd, OpenRC, SysVinit, Windows NSSM
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Traefik]
+    B --> C[HTTP Router]
+    B --> D[Service]
+    B --> E[Middleware]
+    C --> F[Docker/Kubernetes]
+    E --> C
+```
+
 ## Structure
 
 - `config/` — Configuration files and templates
