@@ -1,0 +1,26 @@
+[Unit]
+Description=nginx-proxy-manager - GUI-based reverse proxy manager
+Documentation=https://github.com/jc21/nginx-proxy-manager
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=npm
+Group=npm
+WorkingDirectory=/usr/lib/nginx-proxy-manager
+ExecStart=/usr/bin/node /usr/lib/nginx-proxy-manager/start.js
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/nginx-proxy-manager/npm.log
+StandardError=append:/var/log/nginx-proxy-manager/npm.log
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nginx-proxy-manager /var/log/nginx-proxy-manager /etc/nginx
+
+[Install]
+WantedBy=multi-user.target

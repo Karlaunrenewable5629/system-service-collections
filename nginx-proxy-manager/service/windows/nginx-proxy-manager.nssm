@@ -1,0 +1,44 @@
+; nginx-proxy-manager NSSM configuration for Windows
+; Save this file to C:\ProgramData\nginx-proxy-manager\nginx-proxy-manager.nssm
+;
+; Usage: nssm edit nginx-proxy-manager
+; Or:    nssm install nginx-proxy-manager <this file>
+
+; Application path
+AppDirectory   C:\lib\nginx-proxy-manager
+AppParameters  start.js
+AppStopMethodConsole 15000
+
+; Node.js executable
+AppMethod      C:\Program Files\nodejs\node.exe
+AppParameters  start.js
+
+; Service identity
+AppUser        npm
+AppPassword
+
+; Log files
+AppStdout      C:\var\log\nginx-proxy-manager\npm.log
+AppStderr      C:\var\log\nginx-proxy-manager\npm.log
+AppRotateFiles 1
+AppRotateBytes 10485760
+
+; Restart configuration
+AppRestartPolicy  Restart
+AppRestartDelay   5000
+AppExitCodesAbort  -1
+AppExitCodesReboot  0
+
+; Environment variables
+AppEnvironmentExtra NODE_ENV=production
+
+; Dependencies
+DependsOnService Tcpip
+
+; Start configuration
+Start            SERVICE_AUTO_START
+DelayedAutoStart 1
+
+; Description
+DisplayName      nginx-proxy-manager
+Description      GUI-based reverse proxy manager built on Node.js and Nginx

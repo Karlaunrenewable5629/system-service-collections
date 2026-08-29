@@ -1,0 +1,55 @@
+#!/sbin/openrc-run
+#
+# nginx-proxy-manager OpenRC init script
+#
+
+name="nginx-proxy-manager"
+description="GUI-based reverse proxy manager built on Node.js and Nginx"
+command=/usr/bin/node
+command_args="/usr/lib/nginx-proxy-manager/start.js"
+command_user="npm:npm"
+pidfile="/run/nginx-proxy-manager.pid"
+command_background="yes"
+
+# Working directory
+command_dir="/usr/lib/nginx-proxy-manager"
+
+# Log files
+stdout_log="/var/log/nginx-proxy-manager/npm.log"
+stderr_log="/var/log/nginx-proxy-manager/npm.log"
+
+# Dependencies
+depend()
+{
+    need net
+    after firewall
+}
+
+start_pre()
+{
+    checkpath -f "${pidfile}" -d /run -m 0755 -u npm -g npm || true
+}
+
+start()
+{
+    ebegin "Starting ${name}"
+    start-stop-daemon --start \
+        --make-pidfile \
+        --pidfile "${pidfile}" \
+        --exec "${command}" \
+        -- "${command_args}" \
+        --user "${command_user}" \
+        --background \
+        --stdout "${stdout_log}" \
+        --stderr "${stderr_log}"
+    eend $?
+}
+
+stop()
+{
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop \
+        --pidfile "${pidfile}" \
+        --retry 5
+    eend $?
+}
