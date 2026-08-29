@@ -1,0 +1,18 @@
+# vLLM Windows Service Configuration (NSSM)
+# Save as vllm.nssm and run: nssm install vllm < vllm.nssm
+
+Application: C:\Python311\python.exe
+AppParameters: -m vllm.entrypoints.openai.api_server --config C:\etc\vllm\config.yaml --host 0.0.0.0 --port 8000
+AppDirectory: C:\opt\vllm
+DisplayName: vLLM Inference Server
+Description: High-throughput LLM Inference Server - Fast LLM serving with PagedAttention
+Start: SERVICE_AUTO_START
+Type: SERVICE_WIN32_OWN_PROCESS
+ErrorControl: SERVICE_ERROR_NORMAL
+ObjectName: NT AUTHORITY\NetworkService
+Environment: VLLM_CONFIG=C:\etc\vllm\config.yaml;CUDA_VISIBLE_DEVICES=0;PYTHONPATH=C:\opt\vllm
+StdOutput: C:\var\log\vllm\vllm-out.log
+StdError: C:\var\log\vllm\vllm-err.log
+RotateFiles: 1
+RotateBytes: 10485760
+RotateSeconds: 86400

@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+# vLLM OpenRC init script
+
+name="vllm"
+description="vLLM - High-throughput LLM Inference Server"
+command="/usr/local/bin/vllm"
+command_args="serve /etc/vllm/config.yaml --host 0.0.0.0 --port 8000"
+command_user="vllm:vllm"
+pidfile="/run/vllm/vllm.pid"
+directory="/var/lib/vllm"
+
+depend() {
+    need net
+    after firewall
+    use logger dns
+}
+
+start_pre() {
+    checkpath -d -m 0755 -o vllm:vllm /run/vllm
+    checkpath -d -m 0750 -o vllm:vllm /var/lib/vllm /var/log/vllm
+    checkpath -f -m 0640 -o vllm:vllm /etc/vllm/config.yaml
+}
+
+stop_post() {
+    rm -f /run/vllm/vllm.pid
+}

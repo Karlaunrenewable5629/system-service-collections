@@ -1,0 +1,46 @@
+[Unit]
+Description=vLLM - High-throughput LLM Inference Server
+Documentation=https://docs.vllm.ai/
+After=network.target
+Wants=network.target
+
+[Service]
+Type=exec
+User=vllm
+Group=vllm
+EnvironmentFile=-/etc/vllm/environment
+ExecStart=/usr/local/bin/vllm serve /etc/vllm/config.yaml --host 0.0.0.0 --port 8000
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vllm /var/log/vllm /etc/vllm
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+# GPU access (adjust as needed)
+# DeviceAllow=/dev/nvidiactl rw
+# DeviceAllow=/dev/nvidia-uvm rw
+# DeviceAllow=/dev/nvidia* rw
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+LimitMEMLOCK=infinity
+MemoryLimit=16G
+CPUQuota=800%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vllm
+
+[Install]
+WantedBy=multi-user.target

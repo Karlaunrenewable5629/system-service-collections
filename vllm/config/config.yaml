@@ -1,0 +1,55 @@
+# vLLM Configuration
+# Reference: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+  timeout: 300
+  max_concurrent_requests: 256
+
+model:
+  name: "meta-llama/Llama-2-7b-chat-hf"
+  tensor_parallel_size: 1
+  pipeline_parallel_size: 1
+  trust_remote_code: false
+  download_dir: "/var/lib/vllm/models"
+  revision: "main"
+  tokenizer: "meta-llama/Llama-2-7b-chat-hf"
+  tokenizer_mode: "auto"
+  tokenizer_revision: "main"
+
+engine:
+  gpu_memory_utilization: 0.9
+  swap_space: 4
+  max_num_batched_tokens: 8192
+  max_num_seqs: 256
+  max_model_len: 4096
+  block_size: 16
+  enable_prefix_caching: true
+  use_v2_block_manager: true
+
+scheduler:
+  policy: "priority"
+  max_waiting_tokens: 2048
+
+speculative:
+  enabled: false
+  model: ""
+  num_speculative_tokens: 5
+
+logging:
+  level: "INFO"
+  format: "json"
+  file: "/var/log/vllm/vllm.log"
+  access_log: "/var/log/vllm/access.log"
+
+api:
+  served_model_name: "vllm-model"
+  response_role: "assistant"
+  enable_auto_tool_choice: true
+  enable_tool_use: true
+
+auth:
+  api_key: "${VLLM_API_KEY}"
+  enabled: false

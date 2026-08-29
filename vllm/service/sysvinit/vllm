@@ -1,0 +1,61 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          vllm
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: vLLM - High-throughput LLM Inference Server
+# Description:       vLLM provides high-throughput LLM inference server
+### END INIT INFO
+
+NAME=vllm
+DESC="vLLM - High-throughput LLM Inference Server"
+DAEMON=/usr/local/bin/vllm
+DAEMON_ARGS="serve /etc/vllm/config.yaml --host 0.0.0.0 --port 8000"
+USER=vllm
+GROUP=vllm
+PIDFILE=/var/run/vllm/vllm.pid
+LOGFILE=/var/log/vllm/vllm.log
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $DESC" "$NAME"
+    if [ -f $PIDFILE ] && kill -0 $(cat $PIDFILE) 2>/dev/null; then
+        log_progress_msg "already running"
+        log_end_msg 0
+        return 0
+    fi
+    
+    mkdir -p /var/run/vllm /var/log/vllm
+    chown $USER:$GROUP /var/run/vllm /var/log/vllm
+    
+    start-stop-daemon --start --quiet --background \
+        --pidfile $PIDFILE --make-pidfile \
+        --chuid $USER:$GROUP \
+        --exec $DAEMON -- $DAEMON_ARGS >> $LOGFILE 2>&1
+    
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 60
+    log_end_msg $?
+    rm -f $PIDFILE
+}
+
+status() {
+    status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+}
+
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    restart|force-reload) stop; start ;;
+    status) status ;;
+    *) echo "Usage: $0 {start|stop|restart|force-reload|status}"; exit 1 ;;
+esac
+
+exit 0
