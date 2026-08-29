@@ -1,0 +1,40 @@
+[Application]
+Path=C:\nginx\nginx.exe
+AppDirectory=C:\nginx
+DisplayName=nginx
+Description=nginx - high performance HTTP server and reverse proxy
+Start=auto
+
+[Parameters]
+CommandLineArgs=-g "daemon on; master_process on;"
+AppParameters=-g "daemon on; master_process on;"
+
+[Environment]
+Home=C:\nginx
+
+[Paths]
+AppRotationTimeout=15000
+AppRestartDelay=2500
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+
+[Shutdown]
+ConsoleCtrlHandler=1
+WaitForProcessExit=60000
+KillAppTerminate=1
+KillProcessTimeout=2000
+
+[Output]
+AppStdout=C:\nginx\logs\stdout.log
+AppStderr=C:\nginx\logs\stderr.log
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+AppRotateTimeout=15000
+
+[Info]
+ServiceName=nginx
+ServiceDisplayName=nginx
+ServiceDescription=nginx - high performance HTTP server and reverse proxy
+ServiceType=own_process
+StartType=auto_start
+ErrorControl=normal

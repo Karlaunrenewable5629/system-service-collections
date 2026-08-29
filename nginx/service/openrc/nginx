@@ -1,0 +1,43 @@
+#!/sbin/openrc-run
+
+name="nginx"
+description="nginx - high performance HTTP server and reverse proxy"
+command=/usr/sbin/nginx
+command_args="-g 'daemon on; master_process on;'"
+pidfile=/run/nginx.pid
+command_background=yes
+command_foreground=no
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f -o nginx:nginx "${pidfile}"
+    nginx -t -q || return 1
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal QUIT
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading ${name}"
+    start-stop-daemon --stop --signal HUP --pidfile "${pidfile}"
+    eend $?
+}
+
+upgrade() {
+    ebegin "Upgrading ${name}"
+    start-stop-daemon --stop --signal USR2 --pidfile "${pidfile}"
+    eend $?
+}

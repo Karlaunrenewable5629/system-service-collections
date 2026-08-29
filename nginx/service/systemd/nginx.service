@@ -1,0 +1,27 @@
+[Unit]
+Description=nginx - high performance HTTP server and reverse proxy
+Documentation=http://nginx.org/en/docs/
+After=network-online.target remote-fs.target nss-lookuptarget
+Wants=network-online.target
+
+[Service]
+Type=forking
+User=nginx
+Group=nginx
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t -q -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -g 'daemon on; master_process on;'
+ExecReload=/usr/sbin/nginx -g 'daemon on; master_process on;' -s reload
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+KillMode=mixed
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/log/nginx /run /var/www/html
+
+[Install]
+WantedBy=multi-user.target
