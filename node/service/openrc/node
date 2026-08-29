@@ -1,0 +1,40 @@
+#!/sbin/openrc-run
+
+name="node"
+description="Node.js - JavaScript runtime"
+command=/usr/local/bin/node
+command_args="/etc/node/server.js"
+pidfile=/run/node/node.pid
+command_background=yes
+command_foreground=no
+
+environment="NODE_ENV=production" "NODE_PORT=3000" "NODE_DEBUG_PORT=9229"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f -o node:node "${pidfile}"
+    checkpath -d -o node:node /var/log/node
+    checkpath -d -o node:node /var/www/node
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal TERM
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading ${name}"
+    start-stop-daemon --stop --signal USR2 --pidfile "${pidfile}"
+    eend $?
+}
