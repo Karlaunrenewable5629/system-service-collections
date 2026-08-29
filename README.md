@@ -25,186 +25,183 @@ Each folder contains a service structure supporting multiple init systems, allow
 
 ### AI & Machine Learning
 
-- [litellm](./litellm/) - LLM router and proxy supporting all major AI providers.
-- [ollama](./ollama/) - Run LLMs locally with a simple API.
-- [vllm](./vllm/) - High-throughput LLM serving engine.
-- [open-webui](./open-webui/) - Self-hosted AI assistant interface.
+- [x] [litellm](./litellm/) - LLM router and proxy supporting all major AI providers.
+- [x] [ollama](./ollama/) - Run LLMs locally with a simple API.
+- [x] [vllm](./vllm/) - High-throughput LLM serving engine.
+- [x] [open-webui](./open-webui/) - Self-hosted AI assistant interface.
 
 ### API Gateways & Proxies
 
-- [caddy](./caddy/) - Powerful, enterprise-ready open source web server with automatic HTTPS and flexible configuration.
-- [envoy](./envoy/) - High-performance C++ distributed edge middleware designed for service architectures.
-- [haproxy](./haproxy/) - Reliable, high-performance TCP/HTTP load balancer supporting virtual hosting.
-- [kong](./kong/) - Open-source API gateway built on NGINX, providing routing, transformations, and plugin architecture.
-- [krakend](./krakend/) - Ultra-high-performance API gateway with built-in transformation and aggregation.
-- [nginx](./nginx/) - High-performance web server and reverse proxy, known for its stability and rich feature set.
-- [nginx-proxy-manager](./nginx-proxy-manager/) - Docker-based Nginx proxy manager with a simple web UI for managing reverse proxies.
-- [traefik](./traefik/) - Modern HTTP reverse proxy and load balancer designed to deploy microservices easily.
+- [x] [caddy](./caddy/) - Powerful, enterprise-ready open source web server with automatic HTTPS and flexible configuration.
+- [x] [envoy](./envoy/) - High-performance C++ distributed edge middleware designed for service architectures.
+- [x] [haproxy](./haproxy/) - Reliable, high-performance TCP/HTTP load balancer supporting virtual hosting.
+- [x] [kong](./kong/) - Open-source API gateway built on NGINX, providing routing, transformations, and plugin architecture.
+- [x] [krakend](./krakend/) - Ultra-high-performance API gateway with built-in transformation and aggregation.
+- [x] [nginx](./nginx/) - High-performance web server and reverse proxy, known for its stability and rich feature set.
+- [x] [nginx-proxy-manager](./nginx-proxy-manager/) - Docker-based Nginx proxy manager with a simple web UI for managing reverse proxies.
+- [x] [traefik](./traefik/) - Modern HTTP reverse proxy and load balancer designed to deploy microservices easily.
 
 ### Application Servers
 
-- [node](./node/) - Node.js runtime for building scalable network applications and server-side JavaScript.
-- [php-fpm](./php-fpm/) - PHP FastCGI Process Manager for serving PHP applications with Nginx or Apache.
-- [tomcat](./tomcat/) - Apache Tomcat servlet container for running Java-based web applications.
+- [x] [node](./node/) - Node.js runtime for building scalable network applications and server-side JavaScript.
+- [x] [php-fpm](./php-fpm/) - PHP FastCGI Process Manager for serving PHP applications with Nginx or Apache.
+- [x] [tomcat](./tomcat/) - Apache Tomcat servlet container for running Java-based web applications.
 
 ### Authentication & Identity
 
-- [authentik](./authentik/) - Open-source identity provider for modern authentication and authorization.
-- [freeipa](./freeipa/) - FreeIPA integrated identity management solution combining DNS, CA, LDAP, and Kerberos.
-- [keycloak](./keycloak/) - Open-source identity and access management server for modern applications and services.
-- [openldap](./openldap/) - Open Source implementation of Lightweight Directory Access Protocol (LDAP) directory server.
-- [vault](./vault/) - HashiCorp secret management tool for securely accessing secrets at runtime.
+- [x] [authentik](./authentik/) - Open-source identity provider for modern authentication and authorization.
+- [x] [freeipa](./freeipa/) - FreeIPA integrated identity management solution combining DNS, CA, LDAP, and Kerberos.
+- [x] [keycloak](./keycloak/) - Open-source identity and access management server for modern applications and services.
+- [x] [openldap](./openldap/) - Open Source implementation of Lightweight Directory Access Protocol (LDAP) directory server.
+- [x] [vault](./vault/) - HashiCorp secret management tool for securely accessing secrets at runtime.
 
 ### Automation & CI/CD
 
-- [jenkins](./jenkins/) - Leading open source automation server for CI/CD, featuring pipeline as code, distributed builds, and a vast plugin ecosystem.
-- [woodpecker-ci](./woodpecker-ci/) - Self-hosted continuous integration system written in Go, supporting Docker-based builds and pipeline as code.
-- [semaphore](./semaphore/) - Continuous integration and delivery platform.
+- [x] [jenkins](./jenkins/) - Leading open source automation server for CI/CD, featuring pipeline as code, distributed builds, and a vast plugin ecosystem.
+- [x] [woodpecker-ci](./woodpecker-ci/) - Self-hosted continuous integration system written in Go, supporting Docker-based builds and pipeline as code.
+- [x] [semaphore](./semaphore/) - Continuous integration and delivery platform.
 
 ### Configuration Management
 
-- [salt-minion](./salt-minion/) - SaltStack minion agent for remote node execution, configuration, and orchestration via Salt master.
-- [puppet](./puppet/) - Puppet agent for configuration management, ensuring system state matches declared configuration.
-- [chef](./chef/) - Chef client for configuration management using Ruby-based recipes and runlists.
+- [x] [salt-minion](./salt-minion/) - SaltStack minion agent for remote node execution, configuration, and orchestration via Salt master.
+- [x] [puppet](./puppet/) - Puppet agent for configuration management, ensuring system state matches declared configuration.
+- [x] [chef](./chef/) - Chef client for configuration management using Ruby-based recipes and runlists.
 
 ### Caching & Content Delivery
 
-- [memcached](./memcached/) - High-performance distributed memory caching system, optimized for small chunks of arbitrary data.
-- [redis](./redis/) - In-memory data structure store, used as a database, cache, and message broker with persistence options.
-- [varnish](./varnish/) - HTTP accelerator and reverse proxy, focused on content caching and improving web performance.
-- [squid](./squid/) - Caching proxy for the web, commonly used to speed up delivery and reduce bandwidth.
+- [x] [memcached](./memcached/) - High-performance distributed memory caching system, optimized for small chunks of arbitrary data.
+- [x] [redis](./redis/) - In-memory data structure store, used as a database, cache, and message broker with persistence options.
+- [x] [varnish](./varnish/) - HTTP accelerator and reverse proxy, focused on content caching and improving web performance.
+- [x] [squid](./squid/) - Caching proxy for the web, commonly used to speed up delivery and reduce bandwidth.
 
-### Communication & Message Queue
+### Communication & Messaging
 
-- [activemq](./activemq/) - Open source message broker for enterprise integration.
-- [kafka](./kafka/) - Distributed publish-subscribe messaging system.
-- [automq](./automq/) - Cloud-native Kafka with reduced operational complexity.
-- [nats](./nats/) - High-performance messaging system for cloud-native applications.
-- [pulsar](./pulsar/) - Distributed publish-subscribe messaging platform.
-- [rabbitmq](./rabbitmq/) - Popular open source message broker using AMQP protocol.
-- [redpanda](./redpanda/) - Streaming data platform compatible with Kafka API.
-- [mosquitto](./mosquitto/) - Open source MQTT message broker.
+- [ ] [activemq](./activemq/) - Open source message broker for enterprise integration.
+- [ ] [kafka](./kafka/) - Distributed publish-subscribe messaging system.
+- [ ] [automq](./automq/) - Cloud-native Kafka with reduced operational complexity.
+- [ ] [nats](./nats/) - High-performance messaging system for cloud-native applications.
+- [ ] [pulsar](./pulsar/) - Distributed publish-subscribe messaging platform.
+- [ ] [rabbitmq](./rabbitmq/) - Popular open source message broker using AMQP protocol.
+- [ ] [redpanda](./redpanda/) - Streaming data platform compatible with Kafka API.
+- [ ] [mosquitto](./mosquitto/) - Open source MQTT message broker.
 
 ### Team Chat & Collaboration
 
-- [mattermost](./mattermost/) - Open source Slack alternative for team communication.
-- [rocket-chat](./rocket-chat/) - Open source chat platform for team communication.
+- [x] [mattermost](./mattermost/) - Open source Slack alternative for team communication.
+- [x] [rocket-chat](./rocket-chat/) - Open source chat platform for team communication.
 
 ### Container & Orchestration
 
-- [containerd](./containerd/) - Container runtime for Linux and Windows.
-- [docker](./docker/) - Container platform for developing, shipping, and running applications.
-- [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
+- [ ] [containerd](./containerd/) - Container runtime for Linux and Windows.
+- [ ] [docker](./docker/) - Container platform for developing, shipping, and running applications.
+- [ ] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
 
-### Databases
+### Databases & Storage
 
-- [cassandra](./cassandra/) - Distributed NoSQL database management system.
-- [couchdb](./couchdb/) - Apache CouchDB document-oriented database server.
-- [mariadb](./mariadb/) - Open source relational database management system.
-- [mongodb](./mongodb/) - Source-available cross-platform document-oriented database program.
-- [mysql](./mysql/) - Open source relational database management system.
-- [neo4j](./neo4j/) - Native graph database platform.
-- [postgresql](./postgresql/) - Open source object-relational database system.
-- [scylladb](./scylladb/) - Distributed NoSQL database compatible with Apache Cassandra.
-- [influxdb](./influxdb/) - Time series database for metrics and events.
-
-### Registry
-
-- [registry](./registry/) - Docker registry for storing and distributing container images.
-- [verdaccio](./verdaccio/) - Lightweight private npm proxy registry.
-- [devpi](./devpi/) - Software package testing and distribution system.
+- [ ] [cassandra](./cassandra/) - Distributed NoSQL database management system.
+- [ ] [couchdb](./couchdb/) - Apache CouchDB document-oriented database server.
+- [ ] [mariadb](./mariadb/) - Open source relational database management system.
+- [ ] [mongodb](./mongodb/) - Source-available cross-platform document-oriented database program.
+- [ ] [mysql](./mysql/) - Open source relational database management system.
+- [ ] [neo4j](./neo4j/) - Native graph database platform.
+- [ ] [postgresql](./postgresql/) - Open source object-relational database system.
+- [ ] [scylladb](./scylladb/) - Distributed NoSQL database compatible with Apache Cassandra.
+- [ ] [influxdb](./influxdb/) - Time series database for metrics and events.
+- [ ] [minio](./minio/) - High-performance object storage server compatible with Amazon S3.
+- [ ] [registry](./registry/) - Docker registry for storing and distributing container images.
+- [ ] [verdaccio](./verdaccio/) - Lightweight private npm proxy registry.
+- [ ] [devpi](./devpi/) - Software package testing and distribution system.
 
 ### DNS & Service Discovery
 
-- [bind](./bind/) - Comprehensive implementation of the DNS protocol.
-- [coredns](./coredns/) - Authoritative DNS server written in Go.
-- [dnsmasq](./dnsmasq/) - Lightweight DNS forwarder and DHCP server.
-- [consul](./consul/) - Service mesh solution with service discovery and configuration.
-- [etcd](./etcd/) - Distributed reliable key-value store for the most critical data of a distributed system.
-- [unbound](./unbound/) - Validating, recursive, and caching DNS resolver.
+- [ ] [bind](./bind/) - Comprehensive implementation of the DNS protocol.
+- [ ] [coredns](./coredns/) - Authoritative DNS server written in Go.
+- [ ] [dnsmasq](./dnsmasq/) - Lightweight DNS forwarder and DHCP server.
+- [ ] [consul](./consul/) - Service mesh solution with service discovery and configuration.
+- [ ] [etcd](./etcd/) - Distributed reliable key-value store for the most critical data of a distributed system.
+- [ ] [unbound](./unbound/) - Validating, recursive, and caching DNS resolver.
 
 ### Documentation & Knowledge
 
-- [overleaf](./overleaf/) - Collaborative online LaTeX editor for writing and publishing documents.
-- [backstage](./backstage/) - Developer portal for managing services, components, and documentation.
+- [ ] [overleaf](./overleaf/) - Collaborative online LaTeX editor for writing and publishing documents.
+- [ ] [backstage](./backstage/) - Developer portal for managing services, components, and documentation.
 
 ### File Sync & Storage
 
-- [syncthing](./syncthing/) - Continuous file synchronization between devices.
-- [filebrowser](./filebrowser/) - Web file browser written in Go.
-- [minio](./minio/) - High-performance object storage server compatible with Amazon S3.
+- [ ] [syncthing](./syncthing/) - Continuous file synchronization between devices.
+- [ ] [filebrowser](./filebrowser/) - Web file browser written in Go.
 
 ### Infrastructure & DevOps / Observability
 
-- [prometheus](./prometheus/) - Leading open-source monitoring and alerting toolkit.
-- [grafana](./grafana/) - Leading open-source platform for monitoring and observability.
-- [grafana-alloy](./grafana-alloy/) - Lightweight configuration framework for Grafana.
-- [loki](./loki/) - Horizontally-scalable, highly-available log aggregation system.
-- [tempo](./tempo/) - High-scale distributed tracing backend.
-- [alertmanager](./alertmanager/) - Handles routing alerts and silencing notifications.
-- [opentelemetry-collector](./opentelemetry-collector/) - Components to process telemetry data.
-- [node-exporter](./node-exporter/) - Collector for hardware and OS metrics.
-- [fluent-bit](./fluent-bit/) - Fast and lightweight log processor and forwarder.
-- [fluentd](./fluentd/) - Reliable log collector.
-- [signoz](./signoz/) - Full-stack open-source observability platform.
-- [victoriametrics](./victoriametrics/) - Time series database for monitoring.
-- [localstack](./localstack/) - Local AWS cloud services development.
-- [sentry](./sentry/) - Error tracking and monitoring platform.
-- [uptime-kuma](./uptime-kuma/) - Uptime monitoring tool.
+- [ ] [prometheus](./prometheus/) - Leading open-source monitoring and alerting toolkit.
+- [ ] [grafana](./grafana/) - Leading open-source platform for monitoring and observability.
+- [ ] [grafana-alloy](./grafana-alloy/) - Lightweight configuration framework for Grafana.
+- [ ] [loki](./loki/) - Horizontally-scalable, highly-available log aggregation system.
+- [ ] [tempo](./tempo/) - High-scale distributed tracing backend.
+- [ ] [alertmanager](./alertmanager/) - Handles routing alerts and silencing notifications.
+- [ ] [opentelemetry-collector](./opentelemetry-collector/) - Components to process telemetry data.
+- [ ] [node-exporter](./node-exporter/) - Collector for hardware and OS metrics.
+- [ ] [fluent-bit](./fluent-bit/) - Fast and lightweight log processor and forwarder.
+- [ ] [fluentd](./fluentd/) - Reliable log collector.
+- [ ] [signoz](./signoz/) - Full-stack open-source observability platform.
+- [ ] [victoriametrics](./victoriametrics/) - Time series database for monitoring.
+- [ ] [localstack](./localstack/) - Local AWS cloud services development.
+- [ ] [sentry](./sentry/) - Error tracking and monitoring platform.
+- [ ] [uptime-kuma](./uptime-kuma/) - Uptime monitoring tool.
 
 ### Mail
 
-- [dovecot](./dovecot/) - IMAP and POP3 email server for Unix-like systems.
-- [postfix](./postfix/) - Mail transfer agent (MTA) and server for routing and delivering email.
-- [mailpit](./mailpit/) - Debugging and development SMTP/IMAP server.
-- [listmonk](./listmonk/) - Self-hosted newsletter and mailing list manager.
+- [ ] [dovecot](./dovecot/) - IMAP and POP3 email server for Unix-like systems.
+- [ ] [postfix](./postfix/) - Mail transfer agent (MTA) and server for routing and delivering email.
+- [ ] [mailpit](./mailpit/) - Debugging and development SMTP/IMAP server.
+- [ ] [listmonk](./listmonk/) - Self-hosted newsletter and mailing list manager.
 
 ### Network & Security
 
-- [clamav](./clamav/) - Open source antivirus software toolkit.
-- [trivy](./trivy/) - Container vulnerability checker.
-- [wireguard](./wireguard/) - Modern, secure VPN tunnel.
-- [pihole](./pihole/) - Network-wide ad blocking via DNS.
-- [cloudflare-tunnel](./cloudflare-tunnel/) - Securely exposes local services to the internet without opening inbound ports, via an outbound tunnel to Cloudflare's edge.
+- [ ] [clamav](./clamav/) - Open source antivirus software toolkit.
+- [ ] [trivy](./trivy/) - Container vulnerability checker.
+- [ ] [wireguard](./wireguard/) - Modern, secure VPN tunnel.
+- [ ] [pihole](./pihole/) - Network-wide ad blocking via DNS.
+- [x] [cloudflare-tunnel](./cloudflare-tunnel/) - Securely exposes local services to the internet without opening inbound ports, via an outbound tunnel to Cloudflare's edge.
 
 ### Notifications
 
-- [apprise](./apprise/) - Unified notification library/gateway that pushes alerts to 100+ services (Slack, Discord, email, SMS, etc.) from a single API.
+- [ ] [apprise](./apprise/) - Unified notification library/gateway that pushes alerts to 100+ services (Slack, Discord, email, SMS, etc.) from a single API.
 
 ### Project & Design Collaboration
 
-- [plane](./plane/) - Project management and planning tool.
-- [taiga](./taiga/) - Project management platform for agile development.
-- [openproject](./openproject/) - Open source project management software.
-- [penpot](./penpot/) - Design software for design teams.
+- [ ] [plane](./plane/) - Project management and planning tool.
+- [ ] [taiga](./taiga/) - Project management platform for agile development.
+- [ ] [openproject](./openproject/) - Open source project management software.
+- [ ] [penpot](./penpot/) - Design software for design teams.
 
 ### Search & Analytics
 
-- [elasticsearch](./elasticsearch/) - Distributed RESTful search engine capable of solving a growing number of use cases.
-- [meilisearch](./meilisearch/) - Lightning-fast, easy-to-use search API built on top of Lucene.
+- [ ] [elasticsearch](./elasticsearch/) - Distributed RESTful search engine capable of solving a growing number of use cases.
+- [ ] [meilisearch](./meilisearch/) - Lightning-fast, easy-to-use search API built on top of Lucene.
 
 ### Version Control & Source Code Management
 
-- [gitea](./gitea/) - Git service with self-hosted focus.
-- [gitlab](./gitlab/) - Complete DevOps platform.
+- [ ] [gitea](./gitea/) - Git service with self-hosted focus.
+- [ ] [gitlab](./gitlab/) - Complete DevOps platform.
 
 ### Workflow & Automation
 
-- [n8n](./n8n/) - Workflow automation tool for connecting apps and services.
-- [activepieces](./activepieces/) - Open source automation platform alternative to Zapier.
+- [ ] [n8n](./n8n/) - Workflow automation tool for connecting apps and services.
+- [ ] [activepieces](./activepieces/) - Open source automation platform alternative to Zapier.
 
 ### WSO2 Stack
 
-- [wso2-am](./wso2-am/) - Open source full lifecycle API management platform.
-- [wso2-am-mi](./wso2-am-mi/) - API management micro-integration for on-premise deployments.
-- [wso2-mi](./wso2-mi/) - Integration micro-bus for connecting applications and services.
+- [ ] [wso2-am](./wso2-am/) - Open source full lifecycle API management platform.
+- [ ] [wso2-am-mi](./wso2-am-mi/) - API management micro-integration for on-premise deployments.
+- [ ] [wso2-mi](./wso2-mi/) - Integration micro-bus for connecting applications and services.
 
 ### Other Services
 
-- [code-server](./code-server/) - VS Code running in the browser.
-- [wordpress](./wordpress/) - Popular content management system for building websites and blogs.
-- [openssh-server](./openssh-server/) - OpenSSH server for remote login and file transfer.
-- [parse-server](./parse-server/) - Backend framework for building applications.
+- [ ] [code-server](./code-server/) - VS Code running in the browser.
+- [ ] [wordpress](./wordpress/) - Popular content management system for building websites and blogs.
+- [ ] [openssh-server](./openssh-server/) - OpenSSH server for remote login and file transfer.
+- [ ] [parse-server](./parse-server/) - Backend framework for building applications.
 
 ## Quick Start
 
