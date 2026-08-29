@@ -1,0 +1,25 @@
+@echo off
+REM k3s Windows Note
+REM k3s does not run natively on Windows.
+REM Use WSL2 or a Linux VM to run k3s on Windows.
+REM
+REM Option 1: WSL2
+REM   wsl --install -d Ubuntu
+REM   Then run the Linux install steps inside WSL2.
+REM
+REM Option 2: Rancher Desktop (includes k3s)
+REM   https://rancherdesktop.io/
+REM   winget install Rancher.RancherDesktop
+REM
+REM Option 3: k3d (k3s in Docker)
+REM   https://k3d.io/
+REM   choco install k3d
+REM   k3d cluster create mycluster
+REM   k3d kubeconfig merge mycluster --kubeconfig-switch-context
+
+echo k3s does not run natively on Windows.
+echo.
+echo Recommended options:
+echo   1. Rancher Desktop: winget install Rancher.RancherDesktop
+echo   2. WSL2:           wsl --install -d Ubuntu
+echo   3. k3d:            choco install k3d

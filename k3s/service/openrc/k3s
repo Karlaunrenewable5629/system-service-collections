@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+name="k3s"
+description="Lightweight Kubernetes"
+
+command="/usr/local/bin/k3s"
+command_args="server"
+command_background=true
+pidfile="/run/k3s/k3s.pid"
+output_log="/var/log/k3s.log"
+error_log="/var/log/k3s.log"
+
+depend() {
+    need net
+    need localmount
+    after firewall
+}
+
+start_pre() {
+    modprobe br_netfilter 2>/dev/null || true
+    modprobe overlay 2>/dev/null || true
+    checkpath --directory --mode 0755 /run/k3s
+    checkpath --directory --mode 0750 /var/lib/rancher/k3s
+}

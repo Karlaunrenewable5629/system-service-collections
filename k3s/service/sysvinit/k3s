@@ -1,0 +1,48 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          k3s
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Lightweight Kubernetes
+# Description:       k3s is a lightweight certified Kubernetes distribution
+### END INIT INFO
+
+NAME=k3s
+DAEMON=/usr/local/bin/k3s
+DAEMON_ARGS="server"
+PIDFILE=/run/k3s/k3s.pid
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    modprobe br_netfilter 2>/dev/null || true
+    modprobe overlay 2>/dev/null || true
+    mkdir -p /run/k3s /var/lib/rancher/k3s
+    start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE \
+        --exec $DAEMON -- $DAEMON_ARGS
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 30
+    log_end_msg $?
+}
+
+case "$1" in
+    start)   start ;;
+    stop)    stop ;;
+    restart|force-reload) stop; start ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
