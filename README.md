@@ -3,7 +3,6 @@
  <img src="./banner.svg" alt="System Service Collections" style="width: 100%; max-width: 1200px;" />
 
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-<img src="https://img.shields.io/badge/services-108+-informational" alt="108+ Services">
 <img src="https://img.shields.io/badge/init-systemd%20%7C%20openrc%20%7C%20sysvinit%20%7C%20windows-0db7ed" alt="Init Systems: systemd, OpenRC, SysVinit, Windows">
 
   <p><strong> Ready-to-use system service definitions for development and production services.</strong></p>
@@ -16,7 +15,7 @@ Each folder contains a service structure supporting multiple init systems, allow
 
 ## What You Will Find
 
-- Pre-configured service definitions for 108+ common services
+- Pre-configured service definitions for popular services
 - Support for systemd, OpenRC, SysVinit, and Windows (NSSM)
 - Persistent configuration templates and environment files
 - Service-specific README files with setup, usage, and operational notes
