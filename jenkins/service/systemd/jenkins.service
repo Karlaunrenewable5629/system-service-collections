@@ -1,0 +1,25 @@
+[Unit]
+Description=Jenkins Automated CI/CD Server
+Documentation=https://www.jenkins.io/docs/
+After=network.target
+Wants=docker.service
+Requires=docker.service
+
+[Service]
+Type=notify
+User=jenkins
+Group=jenkins
+Environment="JENKINS_HOME=/var/jenkins_home"
+Environment="JENKINS_OPTS=--httpPort=8080"
+ExecStart=/usr/bin/java -jar /usr/share/jenkins/jenkins.war --httpPort=8080
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=10
+KillSignal=SIGTERM
+LimitNOFILE=65536
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

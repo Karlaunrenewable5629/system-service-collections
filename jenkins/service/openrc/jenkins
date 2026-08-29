@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="jenkins"
+description="Jenkins Automated CI/CD Server"
+
+command="/usr/bin/java"
+command_args="-jar /usr/share/jenkins/jenkins.war --httpPort=8080"
+command_background=true
+pidfile="/run/jenkins/jenkins.pid"
+required_files="/usr/share/jenkins/jenkins.war"
+start_pre() {
+    checkpath --directory --owner jenkins:jenkins --mode 0755 /var/jenkins_home
+    checkpath --directory --owner jenkins:jenkins --mode 0755 /run/jenkins
+    checkpath --directory --owner jenkins:jenkins --mode 0755 /var/log/jenkins
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/java -jar /usr/share/jenkins/jenkins.war --httpPort=8080 --shutdown
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

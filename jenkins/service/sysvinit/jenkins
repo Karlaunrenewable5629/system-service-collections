@@ -1,0 +1,60 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          jenkins
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Jenkins Automated CI/CD Server
+# Description:       Jenkins is the leading open source automation server
+### END INIT INFO
+
+NAME=jenkins
+DAEMON=/usr/bin/java
+WAR=/usr/share/jenkins/jenkins.war
+CONFIG=/etc/jenkins
+PIDFILE=/run/jenkins/jenkins.pid
+USER=jenkins
+GROUP=jenkins
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/jenkins /var/jenkins_home /var/log/jenkins
+    chown $USER:$GROUP /run/jenkins /var/jenkins_home /var/log/jenkins
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- -jar $WAR --httpPort=8080
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    # Jenkins reload not typically supported via signal
+    log_end_msg 1
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
