@@ -1,0 +1,24 @@
+#!/sbin/openrc-run
+
+name="salt-minion"
+description="SaltStack Minion"
+
+command="/usr/bin/salt-minion"
+command_args="-d"
+command_background=true
+pidfile="/run/salt-minion.pid"
+required_files="/usr/bin/salt-minion /etc/salt/minion"
+start_pre() {
+    checkpath --directory --owner salt:salt --mode 0755 /var/log/salt
+    checkpath --directory --owner salt:salt --mode 0755 /var/cache/salt
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/salt-minion -t
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

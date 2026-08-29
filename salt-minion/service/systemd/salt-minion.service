@@ -1,0 +1,20 @@
+[Unit]
+Description=SaltStack Minion
+Documentation=https://docs.saltstack.com/
+After=network.target
+
+[Service]
+Type=notify
+User=salt
+Group=salt
+ExecStart=/usr/bin/salt-minion
+ExecReload=/usr/bin/salt-minion saltutil.refresh_all
+TimeoutStopSec=10
+KillSignal=SIGTERM
+LimitNOFILE=65536
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
