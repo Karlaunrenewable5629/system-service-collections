@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="woodpecker"
+description="Woodpecker CI Server"
+
+command="/usr/local/bin/woodpecker"
+command_args="serve"
+command_background=true
+pidfile="/run/woodpecker/woodpecker.pid"
+required_files="/usr/local/bin/woodpecker /etc/woodpecker/woodpecker.yml"
+start_pre() {
+    checkpath --directory --owner woodpecker:woodpecker --mode 0755 /var/lib/woodpecker
+    checkpath --directory --owner woodpecker:woodpecker --mode 0755 /var/log/woodpecker
+    checkpath --directory --owner woodpecker:woodpecker --mode 0755 /etc/woodpecker
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/local/bin/woodpecker stop
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

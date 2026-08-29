@@ -1,0 +1,59 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          woodpecker
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Woodpecker CI Server
+# Description:       Self-hosted CI/CD server
+### END INIT INFO
+
+NAME=woodpecker
+DAEMON=/usr/local/bin/woodpecker
+CONFIG=/etc/woodpecker/woodpecker.yml
+PIDFILE=/run/woodpecker/woodpecker.pid
+USER=woodpecker
+GROUP=woodpecker
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/woodpecker /var/lib/woodpecker /var/log/woodpecker
+    chown $USER:$GROUP /run/woodpecker /var/lib/woodpecker /var/log/woodpecker
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- serve
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    # Woodpecker reload not typically supported via signal
+    log_end_msg 1
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,25 @@
+[Unit]
+Description=Woodpecker CI Server
+Documentation=https://woodpecker-ci.org/docs/
+After=network.target
+Wants=docker.service
+Requires=docker.service
+
+[Service]
+Type=notify
+User=woodpecker
+Group=woodpecker
+Environment="WOODPECKER_CONFIG=/etc/woodpecker/woodpecker.yml"
+Environment="WOODPECKER_DATABASE_Driver=postgres"
+Environment="WOODPECKER_DATABASE_Source=postgres://user:password@localhost:5432/woodpecker?sslmode=disable"
+ExecStart=/usr/local/bin/woodpecker serve
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=10
+LimitNOFILE=65536
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
