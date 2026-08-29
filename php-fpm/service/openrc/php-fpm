@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+
+name="php-fpm"
+description="PHP-FPM - FastCGI Process Manager"
+command=/usr/sbin/php-fpm
+command_args="--fpm-config /etc/php-fpm/php-fpm.conf"
+pidfile=/run/php-fpm/php-fpm.pid
+command_background=yes
+command_foreground=no
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath -f -o nginx:nginx "${pidfile}"
+    checkpath -d -o nginx:nginx /var/log/php-fpm
+    checkpath -d -o nginx:nginx /var/lib/php-fpm
+}
+
+start() {
+    ebegin "Starting ${name}"
+    start-stop-daemon --start --quiet --exec ${command} -- ${command_args}
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --signal TERM
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading ${name}"
+    start-stop-daemon --stop --signal USR2 --pidfile "${pidfile}"
+    eend $?
+}

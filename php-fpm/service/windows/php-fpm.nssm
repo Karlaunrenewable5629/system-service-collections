@@ -1,0 +1,41 @@
+[Application]
+Path=C:\php-fpm\sbin\php-fpm.exe
+AppDirectory=C:\php-fpm
+DisplayName=PHP-FPM
+Description=PHP-FPM - FastCGI Process Manager
+Start=auto
+
+[Parameters]
+CommandLineArgs=--fpm-config C:\php-fpm\php-fpm.conf
+AppParameters=--fpm-config C:\php-fpm\php-fpm.conf
+
+[Environment]
+PHP_FPM_PID=C:\php-fpm\run\php-fpm.pid
+HOME=C:\php-fpm
+
+[Paths]
+AppRotationTimeout=15000
+AppRestartDelay=2500
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+
+[Shutdown]
+ConsoleCtrlHandler=1
+WaitForProcessExit=60000
+KillAppTerminate=1
+KillProcessTimeout=2000
+
+[Output]
+AppStdout=C:\php-fpm\logs\stdout.log
+AppStderr=C:\php-fpm\logs\stderr.log
+AppRotateFiles=10
+AppRotateByteMapSize=10485760
+AppRotateTimeout=15000
+
+[Info]
+ServiceName=php-fpm
+ServiceDisplayName=PHP-FPM
+ServiceDescription=PHP-FPM - FastCGI Process Manager
+ServiceType=own_process
+StartType=auto_start
+ErrorControl=normal

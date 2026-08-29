@@ -1,0 +1,74 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          php-fpm
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: PHP-FPM - FastCGI Process Manager
+# Description:       Starts/stops the PHP-FPM daemon
+### END INIT INFO
+
+NAME=php-fpm
+DAEMON=/usr/sbin/php-fpm
+DAEMON_OPTS="--fpm-config /etc/php-fpm/php-fpm.conf"
+PIDFILE=/run/php-fpm/php-fpm.pid
+CONFIG=/etc/php-fpm/php-fpm.conf
+PHP_FPM_USER=nginx
+PHP_FPM_GROUP=nginx
+
+set -e
+
+. /lib/lsb/init-functions
+
+test -x $DAEMON || exit 0
+test -f $CONFIG || exit 0
+
+mkdir -p /run/php-fpm /var/log/php-fpm /var/lib/php-fpm
+chown -R $PHP_FPM_USER:$PHP_FPM_GROUP /run/php-fpm /var/log/php-fpm /var/lib/php-fpm
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $PHP_FPM_USER:$PHP_FPM_GROUP --exec $DAEMON -- $DAEMON_OPTS
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --signal TERM
+    log_end_msg $?
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|force-reload)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  reload)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  status)
+    if [ -f "$PIDFILE" ] && kill -0 $(cat "$PIDFILE") 2>/dev/null; then
+      log_success_msg "$NAME is running (PID $(cat "$PIDFILE"))."
+    else
+      log_failure_msg "$NAME is not running."
+      exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|force-reload|reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

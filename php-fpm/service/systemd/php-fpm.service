@@ -1,0 +1,26 @@
+[Unit]
+Description=PHP-FPM - FastCGI Process Manager
+Documentation=https://www.php.net/manual/en/install.fpm.php
+After=network-online.target remote-fs.target nss-lookup-target
+Wants=network-online.target
+
+[Service]
+Type=notify
+User=nginx
+Group=nginx
+ExecStart=/usr/sbin/php-fpm --nodaemonize --fpm-config /etc/php-fpm/php-fpm.conf
+ExecStop=/usr/sbin/php-fpm --fpm-config /etc/php-fpm/php-fpm.conf --kill
+ExecReload=/bin/kill -USR2 $MAINPID
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=5s
+KillMode=mixed
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/log/php-fpm /run /var/lib/php-fpm
+Environment=PHP_FPM_PID=/run/php-fpm/php-fpm.pid
+
+[Install]
+WantedBy=multi-user.target
