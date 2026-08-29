@@ -23,6 +23,17 @@ Jenkins is the leading open source automation server. It provides hundreds of pl
 - Root or sudo privileges
 - Port 8080 (HTTP) and 50000 (agent JNLP) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Developers] --> B[Jenkins]
+    B --> C[Pipeline as Code]
+    B --> D[Distributed Builds]
+    B --> E[Plugin Ecosystem]
+    C --> D
+```
+
 ## Structure
 
 ```
