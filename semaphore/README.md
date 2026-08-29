@@ -24,6 +24,16 @@ Semaphore is an open-source continuous integration and deployment platform built
 - Git, Ansible, and SSH installed (for job execution)
 - Ports 3000 (HTTP) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Developers] --> B[Semaphore]
+    B --> C[CI/CD Pipeline]
+    B --> D[Workflow Engine]
+    C --> D
+```
+
 ## Structure
 
 ```
