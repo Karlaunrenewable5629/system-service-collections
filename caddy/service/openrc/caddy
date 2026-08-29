@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+
+name="caddy"
+description="Caddy HTTP/2 Web Server"
+
+command="/usr/bin/caddy"
+command_args="run --environ --config /etc/caddy/Caddyfile"
+command_background=true
+pidfile="/run/caddy/caddy.pid"
+required_files="/etc/caddy/Caddyfile"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner caddy:caddy --mode 0755 /run/caddy
+    checkpath --directory --owner caddy:caddy --mode 0755 /var/lib/caddy
+    checkpath --directory --owner caddy:caddy --mode 0755 /var/log/caddy
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/caddy stop --config /etc/caddy/Caddyfile
+    eend $?
+}
