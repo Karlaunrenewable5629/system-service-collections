@@ -1,0 +1,49 @@
+[Unit]
+Description=Keycloak Identity and Access Management Server
+Documentation=https://www.keycloak.org/guides#server
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=idle
+User=keycloak
+Group=keycloak
+
+# Environment
+Environment="KC_HOME=/opt/keycloak"
+EnvironmentFile=-/etc/keycloak/keycloak.env
+
+# Start the optimized Keycloak server
+# Remove --optimized if you have not run 'kc.sh build' first
+ExecStart=/opt/keycloak/bin/kc.sh start --optimized
+
+# Give Keycloak time to shut down gracefully (JVM + DB connection draining)
+TimeoutStartSec=120
+TimeoutStopSec=60
+KillSignal=SIGTERM
+KillMode=process
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=90
+StartLimitBurst=3
+
+# File descriptor and process limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Security hardening
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/keycloak/data /var/log/keycloak /tmp
+NoNewPrivileges=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=keycloak
+
+[Install]
+WantedBy=multi-user.target

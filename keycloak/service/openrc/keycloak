@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+
+name="keycloak"
+description="Keycloak Identity and Access Management Server"
+
+KC_HOME="${KC_HOME:-/opt/keycloak}"
+KC_USER="${KC_USER:-keycloak}"
+KC_GROUP="${KC_GROUP:-keycloak}"
+KC_LOG_DIR="${KC_LOG_DIR:-/var/log/keycloak}"
+
+command="${KC_HOME}/bin/kc.sh"
+# Remove --optimized if you have not run 'kc.sh build' first
+command_args="start --optimized"
+command_user="${KC_USER}:${KC_GROUP}"
+command_background=true
+pidfile="/run/keycloak/keycloak.pid"
+
+output_log="${KC_LOG_DIR}/keycloak-out.log"
+error_log="${KC_LOG_DIR}/keycloak-err.log"
+
+required_files="${KC_HOME}/bin/kc.sh"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner "${KC_USER}:${KC_GROUP}" --mode 0755 /run/keycloak
+    checkpath --directory --owner "${KC_USER}:${KC_GROUP}" --mode 0750 "${KC_LOG_DIR}"
+    checkpath --directory --owner "${KC_USER}:${KC_GROUP}" --mode 0755 "${KC_HOME}/data"
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    start-stop-daemon --stop --quiet --pidfile "${pidfile}" --retry SIGTERM/60/SIGKILL/5
+    eend $?
+}

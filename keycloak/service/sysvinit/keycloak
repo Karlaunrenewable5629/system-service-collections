@@ -1,0 +1,73 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          keycloak
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Keycloak Identity and Access Management Server
+# Description:       Keycloak is an open source identity and access management
+#                    solution providing SSO, OAuth 2.0, and OpenID Connect.
+### END INIT INFO
+
+NAME="keycloak"
+KC_HOME="${KC_HOME:-/opt/keycloak}"
+DAEMON="${KC_HOME}/bin/kc.sh"
+# Remove --optimized if you have not run 'kc.sh build' first
+DAEMON_ARGS="start --optimized"
+PIDFILE="/run/keycloak/keycloak.pid"
+USER="keycloak"
+GROUP="keycloak"
+LOG_DIR="/var/log/keycloak"
+LOG_FILE="${LOG_DIR}/keycloak.log"
+
+[ -x "${DAEMON}" ] || exit 0
+[ -d "${KC_HOME}" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting ${NAME}" "${NAME}"
+    mkdir -p /run/keycloak "${LOG_DIR}" "${KC_HOME}/data"
+    chown "${USER}:${GROUP}" /run/keycloak "${LOG_DIR}" "${KC_HOME}/data"
+    start-stop-daemon --start --quiet --background \
+        --make-pidfile --pidfile "${PIDFILE}" \
+        --chuid "${USER}:${GROUP}" \
+        --exec /bin/sh -- -c "exec ${DAEMON} ${DAEMON_ARGS} >> ${LOG_FILE} 2>&1"
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping ${NAME}" "${NAME}"
+    start-stop-daemon --stop --quiet --retry TERM/60/KILL/5 \
+        --pidfile "${PIDFILE}"
+    log_end_msg $?
+    rm -f "${PIDFILE}"
+}
+
+status() {
+    status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        sleep 2
+        start
+        ;;
+    status)
+        status
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|force-reload|status}"
+        exit 1
+        ;;
+esac
+
+exit 0

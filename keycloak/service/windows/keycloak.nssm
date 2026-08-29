@@ -1,0 +1,86 @@
+@echo off
+REM ============================================================
+REM Keycloak Windows Service Installation via NSSM
+REM https://nssm.cc/
+REM
+REM Prerequisites:
+REM   - NSSM installed and available on PATH (or adjust NSSM_PATH)
+REM   - Java 17+ installed (JAVA_HOME set)
+REM   - Keycloak extracted to KC_HOME
+REM   - keycloak.conf configured in KC_HOME\conf\
+REM
+REM Run this script as Administrator.
+REM ============================================================
+
+REM ---- Configuration ----------------------------------------
+set SERVICE_NAME=keycloak
+set DISPLAY_NAME=Keycloak Identity and Access Management
+set DESCRIPTION=Open source identity and access management server providing SSO, OAuth 2.0, and OpenID Connect.
+
+set KC_HOME=C:\keycloak
+set LOG_DIRECTORY=C:\keycloak\logs
+set EXECUTABLE=%KC_HOME%\bin\kc.bat
+
+REM Remove --optimized if you have not run 'kc.bat build' first
+set ARGUMENTS=start --optimized
+
+REM Optional: path to nssm.exe if not on PATH
+REM set NSSM_PATH=C:\tools\nssm\win64\nssm.exe
+set NSSM_PATH=nssm
+REM -----------------------------------------------------------
+
+REM Create log directory if it does not exist
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+REM Install the service
+"%NSSM_PATH%" install %SERVICE_NAME% "%EXECUTABLE%" "%ARGUMENTS%"
+
+REM Service metadata
+"%NSSM_PATH%" set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+"%NSSM_PATH%" set %SERVICE_NAME% Description "%DESCRIPTION%"
+
+REM Working directory
+"%NSSM_PATH%" set %SERVICE_NAME% AppDirectory "%KC_HOME%"
+
+REM Redirect stdout/stderr to log files
+"%NSSM_PATH%" set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\keycloak-out.log"
+"%NSSM_PATH%" set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\keycloak-err.log"
+
+REM Log rotation
+"%NSSM_PATH%" set %SERVICE_NAME% AppRotateFiles 1
+"%NSSM_PATH%" set %SERVICE_NAME% AppRotateOnline 1
+"%NSSM_PATH%" set %SERVICE_NAME% AppRotateSeconds 86400
+"%NSSM_PATH%" set %SERVICE_NAME% AppRotateBytes 10485760
+
+REM Startup type: auto-start
+"%NSSM_PATH%" set %SERVICE_NAME% Start SERVICE_AUTO_START
+
+REM Service type
+"%NSSM_PATH%" set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+REM Recovery actions: restart on failure
+"%NSSM_PATH%" set %SERVICE_NAME% ResetPeriod 86400
+"%NSSM_PATH%" set %SERVICE_NAME% Action1 Restart
+"%NSSM_PATH%" set %SERVICE_NAME% Delay1 10000
+"%NSSM_PATH%" set %SERVICE_NAME% Action2 Restart
+"%NSSM_PATH%" set %SERVICE_NAME% Delay2 20000
+"%NSSM_PATH%" set %SERVICE_NAME% Action3 Restart
+"%NSSM_PATH%" set %SERVICE_NAME% Delay3 30000
+
+REM Graceful stop timeout (milliseconds)
+"%NSSM_PATH%" set %SERVICE_NAME% AppStopMethodTimeout 60000
+
+REM Environment (pass JAVA_HOME if not globally set)
+REM "%NSSM_PATH%" set %SERVICE_NAME% AppEnvironmentExtra "JAVA_HOME=C:\Java\jdk-21"
+
+echo.
+echo Service "%SERVICE_NAME%" installed successfully.
+echo.
+echo Manage with:
+echo   nssm start   %SERVICE_NAME%
+echo   nssm stop    %SERVICE_NAME%
+echo   nssm restart %SERVICE_NAME%
+echo   nssm status  %SERVICE_NAME%
+echo   nssm remove  %SERVICE_NAME% confirm
+echo.
+echo Admin console will be available at http://localhost:8080/admin
