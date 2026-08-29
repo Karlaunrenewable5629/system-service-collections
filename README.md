@@ -96,7 +96,7 @@ Each folder contains a service structure supporting multiple init systems, allow
 - [x] [docker](./docker/) - Container platform for developing, shipping, and running applications.
 - [x] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
 
-### Databases & Storage
+### Databases
 
 - [ ] [cassandra](./cassandra/) - Distributed NoSQL database management system.
 - [ ] [couchdb](./couchdb/) - Apache CouchDB document-oriented database server.
@@ -107,7 +107,9 @@ Each folder contains a service structure supporting multiple init systems, allow
 - [ ] [postgresql](./postgresql/) - Open source object-relational database system.
 - [ ] [scylladb](./scylladb/) - Distributed NoSQL database compatible with Apache Cassandra.
 - [ ] [influxdb](./influxdb/) - Time series database for metrics and events.
-- [ ] [minio](./minio/) - High-performance object storage server compatible with Amazon S3.
+
+## Registry
+
 - [ ] [registry](./registry/) - Docker registry for storing and distributing container images.
 - [ ] [verdaccio](./verdaccio/) - Lightweight private npm proxy registry.
 - [ ] [devpi](./devpi/) - Software package testing and distribution system.
@@ -130,6 +132,7 @@ Each folder contains a service structure supporting multiple init systems, allow
 
 - [ ] [syncthing](./syncthing/) - Continuous file synchronization between devices.
 - [ ] [filebrowser](./filebrowser/) - Web file browser written in Go.
+- [ ] [minio](./minio/) - High-performance object storage server compatible with Amazon S3.
 
 ### Infrastructure & DevOps / Observability
 
