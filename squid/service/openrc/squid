@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+name="squid"
+description="Squid Proxy Cache"
+
+command="/usr/local/sbin/squid"
+command_args="-N -d 1"
+command_background=true
+pidfile="/var/run/squid/squid.pid"
+required_files="/usr/local/sbin/squid /etc/squid/squid.conf"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner squid:squid --mode 0755 /var/spool/squid
+    checkpath --directory --owner squid:squid --mode 0755 /var/log/squid
+    checkpath --directory --owner squid:squid --mode 0755 /run/squid
+}
