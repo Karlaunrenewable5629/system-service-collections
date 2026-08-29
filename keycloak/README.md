@@ -24,6 +24,18 @@ Keycloak is an open-source identity and access management solution for modern ap
 - Root or sudo privileges
 - Ports 8080 (HTTP) and 8443 (HTTPS) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Keycloak]
+    B --> C[Java/JDK]
+    B --> D[Database]
+    C --> D
+    B --> E[HTTP]
+    B --> F[HTTPS]
+```
+
 ## Structure
 
 ```
