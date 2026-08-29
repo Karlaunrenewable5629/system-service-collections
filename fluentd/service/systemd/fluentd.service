@@ -1,0 +1,19 @@
+[Unit]
+Description=Fluentd Data Collector
+Documentation=https://docs.fluentd.org/
+After=network.target
+
+[Service]
+Type=notify
+User=fluentd
+Group=fluent-detect
+ExecStart=/usr/bin/fluentd --config /etc/fluentd/fluentd.conf --log /var/log/fluentd/fluentd.log --pid-file /run/fluentd/fluentd.pid
+ExecReload=/usr/bin/fluentd -c /etc/fluentd/fluentd.conf -P /run/fluentd/fluentd.pid -S
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

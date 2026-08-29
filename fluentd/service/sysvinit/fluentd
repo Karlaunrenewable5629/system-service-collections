@@ -1,0 +1,66 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          fluentd
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Fluentd Data Collector
+# Description:       Fluentd is a data collector for unified logging layer
+### END INIT INFO
+
+NAME=fluentd
+DAEMON=/usr/bin/fluentd
+CONFIG=/etc/fluentd/fluentd.conf
+PIDFILE=/run/fluentd/fluentd.pid
+USER=fluentd
+GROUP=fluent-detect
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/fluentd /var/lib/fluentd /var/log/fluentd
+    chown $USER:$GROUP /run/fluentd /var/lib/fluentd /var/log/fluentd
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- --config $CONFIG
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    $DAEMON -c $CONFIG -O
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    $DAEMON -c $CONFIG -O
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    reload)
+        reload
+        ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+        ;;
+esac

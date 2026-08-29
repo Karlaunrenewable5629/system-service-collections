@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="fluentd"
+description="Fluentd Data Collector"
+
+command="/usr/bin/fluentd"
+command_args "--config /etc/fluentd/fluentd.conf --log /var/log/fluentd/fluentd.log --pid-file /run/fluentd/fluentd.pid"
+command_background=true
+pidfile="/run/fluentd/fluentd.pid"
+required_files="/etc/fluentd/fluentd.conf"
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath --directory --owner fluentd:fluent-detect --mode 0755 /run/fluentd
+    checkpath --directory --owner fluentd:fluent-detect --mode 0755 /var/lib/fluentd
+    checkpath --directory --owner fluentd:fluent-detect --mode 0755 /var/log/fluentd
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/fluentd -c /etc/fluentd/fluentd.conf -O
+    eend $?
+}
