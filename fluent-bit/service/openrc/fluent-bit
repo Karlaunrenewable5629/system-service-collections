@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="fluent-bit"
+description="Fluent Bit Log Controller"
+
+command="/usr/bin/fluent-bit"
+command_args="-c /etc/fluent-bit/fluent-bit.conf -o"
+command_background=true
+pidfile="/run/fluent-bit/fluent-bit.pid"
+required_files="/etc/fluent-bit/fluent-bit.conf"
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath --directory --owner fluent-bit:fluent-bit --mode 0755 /run/fluent-bit
+    checkpath --directory --owner fluent-bit:fluent-bit --mode 0755 /var/lib/fluent-bit
+    checkpath --directory --owner fluent-bit:fluent-bit --mode 0755 /var/log/fluent-bit
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/fluent-bit stop -c /etc/fluent-bit/fluent-bit.conf
+    eend $?
+}

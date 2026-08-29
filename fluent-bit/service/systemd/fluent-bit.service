@@ -1,0 +1,19 @@
+[Unit]
+Description=Fluent Bit Log Collector
+Documentation=https://fluentbit.fluentd.org/
+After=network.target
+
+[Service]
+Type=notify
+User=fluent-bit
+Group=fluent-bit
+ExecStart=/usr/bin/fluent-bit -c /etc/fluent-bit/fluent-bit.conf -o
+ExecReload=/usr/bin/fluent-bit -c /etc/fluent-bit/fluent-bit.conf -O
+TimeoutStopSec=5s
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

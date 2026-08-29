@@ -1,0 +1,66 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          fluent-bit
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Fluent Bit Log Collector
+# Description:       Fluent Bit is a lightweight log collector
+### END INIT INFO
+
+NAME=fluent-bit
+DAEMON=/usr/bin/fluent-bit
+CONFIG=/etc/fluent-bit/fluent-bit.conf
+PIDFILE=/run/fluent-bit/fluent-bit.pid
+USER=fluent-bit
+GROUP=fluent-bit
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/fluent-bit /var/lib/fluent-bit /var/log/fluent-bit
+    chown $USER:$GROUP /run/fluent-bit /var/lib/fluent-bit /var/log/fluent-bit
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- -c $CONFIG
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    $DAEMON -c $CONFIG -O
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    $DAEMON -c $CONFIG -O
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    reload)
+        reload
+        ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+        ;;
+esac
