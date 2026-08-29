@@ -1,0 +1,79 @@
+# k3s configuration file
+# Default location: /etc/rancher/k3s/config.yaml
+# Reference: https://docs.k3s.io/installation/configuration
+
+# --- Server Options ---
+
+# Bind address for API server (default: 0.0.0.0)
+# bind-address: 0.0.0.0
+
+# API server port (default: 6443)
+# https-listen-port: 6443
+
+# Advertise address (for multi-node; set to the server's reachable IP)
+# advertise-address: 192.168.1.100
+
+# Cluster CIDR for pods (default: 10.42.0.0/16)
+cluster-cidr: 10.42.0.0/16
+
+# Service CIDR (default: 10.43.0.0/16)
+service-cidr: 10.43.0.0/16
+
+# Cluster DNS address (default: 10.43.0.10)
+cluster-dns: 10.43.0.10
+
+# Cluster domain (default: cluster.local)
+cluster-domain: cluster.local
+
+# Disable built-in components (comment out to keep enabled)
+# disable:
+#   - traefik
+#   - servicelb
+#   - local-storage
+#   - coredns
+#   - metrics-server
+
+# TLS SANs — additional hostnames/IPs in the server TLS cert
+# tls-san:
+#   - my-cluster.example.com
+#   - 192.168.1.100
+
+# Datastore (default: embedded SQLite; use etcd or external DB for HA)
+# cluster-init: true          # bootstrap embedded etcd HA
+# datastore-endpoint: "postgres://user:pass@db:5432/k3s"
+
+# Node labels and taints
+# node-label:
+#   - "node-role=master"
+# node-taint:
+#   - "node-role.kubernetes.io/master=true:NoSchedule"
+
+# --- Agent Options ---
+
+# Server URL (required on agent nodes)
+# server: https://192.168.1.100:6443
+
+# Token (shared secret for joining nodes)
+# token: my-shared-secret
+
+# --- Common Options ---
+
+# Write kubeconfig to this path and set permissions
+write-kubeconfig: /etc/rancher/k3s/k3s.yaml
+write-kubeconfig-mode: "0644"
+
+# Log level (0=info, 1=debug, 2=trace)
+# verbosity: 0
+
+# Container runtime endpoint (default: containerd)
+# container-runtime-endpoint: unix:///run/containerd/containerd.sock
+
+# Extra kubelet arguments
+# kubelet-arg:
+#   - "eviction-hard=memory.available<200Mi"
+#   - "max-pods=110"
+
+# Extra kube-apiserver arguments
+# kube-apiserver-arg:
+#   - "audit-log-path=/var/log/k3s-audit.log"
+#   - "audit-log-maxage=30"
