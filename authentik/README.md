@@ -23,6 +23,18 @@ Authentik is an open-source identity provider focused on flexibility and versati
 - Root or sudo privileges
 - Ports 9000 (HTTP) and 9443 (HTTPS) open
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Authentik]
+    B --> C[PostgreSQL]
+    B --> D[Redis]
+    C --> D
+    B --> E[HTTP]
+    B --> F[HTTPS]
+```
+
 ## Structure
 
 ```
