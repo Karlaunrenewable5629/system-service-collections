@@ -1,0 +1,172 @@
+# ==============================================================================
+# slapd.nssm — Windows NSSM Service Configuration for OpenLDAP (slapd)
+# ==============================================================================
+# NSSM (Non-Sucking Service Manager) is required to run slapd as a
+# Windows service. Download from: https://nssm.cc/download
+#
+# Prerequisites:
+#   1. Download and extract OpenLDAP for Windows to C:\openldap\
+#      (or adjust SLAPD_ROOT below)
+#   2. Edit C:\openldap\etc\openldap\slapd.conf with your settings
+#   3. Place nssm.exe somewhere on your PATH (e.g., C:\Windows\System32\)
+#   4. Run this script in an elevated (Administrator) PowerShell prompt:
+#
+#        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+#        .\slapd.nssm.ps1
+#
+# This file documents the NSSM parameters. The companion .ps1 script applies them.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Service Parameters
+# ------------------------------------------------------------------------------
+#
+# SERVICE_NAME      : Windows service name (shown in services.msc)
+# SLAPD_ROOT        : Root installation directory of OpenLDAP for Windows
+# SLAPD_EXE         : Full path to slapd.exe
+# SLAPD_CONF        : Full path to slapd.conf
+# SLAPD_URLS        : Listener URLs (space-separated)
+# LOG_DIR           : Directory for stdout/stderr logs
+# ------------------------------------------------------------------------------
+
+# ==============================================================================
+# PowerShell Installation Script
+# Save as slapd.nssm.ps1 and run as Administrator
+# ==============================================================================
+<#
+.SYNOPSIS
+    Installs OpenLDAP (slapd) as a Windows service using NSSM.
+
+.DESCRIPTION
+    This script installs and configures slapd as a Windows service.
+    It requires NSSM to be available on the PATH.
+    Run as Administrator.
+
+.NOTES
+    Adjust the variables at the top of the script to match your environment.
+#>
+
+# ---- Configuration -----------------------------------------------------------
+$ServiceName  = "slapd"
+$SlapdRoot    = "C:\openldap"
+$SlapdExe     = "$SlapdRoot\libexec\slapd.exe"
+$SlapdConf    = "$SlapdRoot\etc\openldap\slapd.conf"
+$SlapdUrls    = "ldap:///"             # Add "ldaps:///" for TLS
+$AppDirectory = $SlapdRoot
+$LogDir       = "$SlapdRoot\logs"
+$Description  = "OpenLDAP Directory Service (slapd)"
+
+# ---- Validate ----------------------------------------------------------------
+if (-not (Get-Command "nssm.exe" -ErrorAction SilentlyContinue)) {
+    Write-Error "nssm.exe not found on PATH. Download from https://nssm.cc/download"
+    exit 1
+}
+
+if (-not (Test-Path $SlapdExe)) {
+    Write-Error "slapd.exe not found at: $SlapdExe"
+    Write-Error "Install OpenLDAP for Windows to $SlapdRoot first."
+    exit 1
+}
+
+if (-not (Test-Path $SlapdConf)) {
+    Write-Error "slapd.conf not found at: $SlapdConf"
+    Write-Error "Create the configuration file before installing the service."
+    exit 1
+}
+
+# ---- Create log directory ----------------------------------------------------
+if (-not (Test-Path $LogDir)) {
+    New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
+    Write-Host "Created log directory: $LogDir"
+}
+
+# ---- Remove existing service (if present) ------------------------------------
+$existing = & nssm status $ServiceName 2>&1
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "Removing existing '$ServiceName' service..."
+    & nssm stop $ServiceName confirm 2>&1 | Out-Null
+    & nssm remove $ServiceName confirm
+}
+
+# ---- Install service ---------------------------------------------------------
+Write-Host "Installing '$ServiceName' service..."
+& nssm install $ServiceName $SlapdExe "-f `"$SlapdConf`" -h `"$SlapdUrls`""
+
+# ---- Configure service -------------------------------------------------------
+# Working directory
+& nssm set $ServiceName AppDirectory $AppDirectory
+
+# Service description
+& nssm set $ServiceName Description $Description
+
+# Start type: SERVICE_AUTO_START (automatic), SERVICE_DEMAND_START (manual)
+& nssm set $ServiceName Start SERVICE_AUTO_START
+
+# Stdout and stderr log files
+& nssm set $ServiceName AppStdout "$LogDir\slapd.log"
+& nssm set $ServiceName AppStderr "$LogDir\slapd-error.log"
+
+# Log rotation — rotate when file reaches 10 MB
+& nssm set $ServiceName AppRotateFiles 1
+& nssm set $ServiceName AppRotateOnline 1
+& nssm set $ServiceName AppRotateBytes 10485760
+
+# Restart on failure with a 5-second delay
+& nssm set $ServiceName AppExit Default Restart
+& nssm set $ServiceName AppRestartDelay 5000
+
+# ---- Start service -----------------------------------------------------------
+Write-Host "Starting '$ServiceName' service..."
+& nssm start $ServiceName
+
+# ---- Verify ------------------------------------------------------------------
+Start-Sleep -Seconds 2
+$status = & nssm status $ServiceName
+Write-Host "Service status: $status"
+
+if ($status -match "SERVICE_RUNNING") {
+    Write-Host ""
+    Write-Host "OpenLDAP service installed and running." -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Service name : $ServiceName"
+    Write-Host "  Executable   : $SlapdExe"
+    Write-Host "  Config file  : $SlapdConf"
+    Write-Host "  Log files    : $LogDir"
+    Write-Host "  LDAP port    : 389"
+    Write-Host "  LDAPS port   : 636 (if configured)"
+    Write-Host ""
+    Write-Host "Test with:"
+    Write-Host "  ldapsearch -x -H ldap://localhost -b dc=example,dc=com -s base"
+} else {
+    Write-Warning "Service may not have started correctly. Check: $LogDir\slapd-error.log"
+    Write-Host "Inspect with: nssm status $ServiceName"
+}
+
+# ==============================================================================
+# Manual NSSM Commands Reference
+# ==============================================================================
+# Install:
+#   nssm install slapd "C:\openldap\libexec\slapd.exe" "-f C:\openldap\etc\openldap\slapd.conf -h ldap:///"
+#
+# Configure:
+#   nssm set slapd AppDirectory "C:\openldap"
+#   nssm set slapd Description "OpenLDAP Directory Service"
+#   nssm set slapd Start SERVICE_AUTO_START
+#   nssm set slapd AppStdout "C:\openldap\logs\slapd.log"
+#   nssm set slapd AppStderr "C:\openldap\logs\slapd-error.log"
+#
+# Start / Stop / Restart:
+#   nssm start slapd
+#   nssm stop slapd
+#   nssm restart slapd
+#
+# Status:
+#   nssm status slapd
+#   sc query slapd
+#
+# View logs:
+#   Get-Content "C:\openldap\logs\slapd.log" -Wait
+#
+# Remove service:
+#   nssm stop slapd
+#   nssm remove slapd confirm

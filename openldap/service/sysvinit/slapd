@@ -1,0 +1,189 @@
+#!/bin/bash
+# ==============================================================================
+# SysVinit script for OpenLDAP (slapd)
+# chkconfig: 2345 20 80
+# description: OpenLDAP Directory Service
+# processname: slapd
+# pidfile: /var/run/openldap/slapd.pid
+# config: /etc/openldap/slapd.conf
+#
+# Install (Debian/Ubuntu):
+#   sudo cp slapd /etc/init.d/slapd
+#   sudo chmod +x /etc/init.d/slapd
+#   sudo update-rc.d slapd defaults
+#   sudo service slapd start
+#
+# Install (RHEL/CentOS):
+#   sudo cp slapd /etc/init.d/slapd
+#   sudo chmod +x /etc/init.d/slapd
+#   sudo chkconfig slapd on
+#   sudo service slapd start
+# ==============================================================================
+
+### BEGIN INIT INFO
+# Provides:          slapd
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenLDAP Directory Service
+# Description:       Starts and stops the OpenLDAP slapd daemon
+### END INIT INFO
+
+set -e
+
+# Source init functions
+if [[ -f /lib/lsb/init-functions ]]; then
+    # shellcheck source=/dev/null
+    . /lib/lsb/init-functions
+elif [[ -f /etc/rc.d/init.d/functions ]]; then
+    # shellcheck source=/dev/null
+    . /etc/rc.d/init.d/functions
+fi
+
+# ------------------------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------------------------
+NAME="slapd"
+DESC="OpenLDAP Directory Service"
+DAEMON="/usr/sbin/slapd"
+
+: "${SLAPD_CONF:=/etc/openldap/slapd.conf}"
+: "${SLAPD_URLS:=ldap:/// ldaps:///}"
+: "${SLAPD_OPTIONS:=}"
+: "${SLAPD_USER:=ldap}"
+: "${SLAPD_GROUP:=ldap}"
+
+PIDFILE="/var/run/openldap/slapd.pid"
+LOCKFILE="/var/lock/subsys/slapd"
+DB_DIR="/var/lib/ldap"
+RUN_DIR="/var/run/openldap"
+
+# Source environment overrides if available
+[[ -f /etc/default/slapd ]]    && . /etc/default/slapd
+[[ -f /etc/sysconfig/slapd ]]  && . /etc/sysconfig/slapd
+
+# ------------------------------------------------------------------------------
+# Helper functions
+# ------------------------------------------------------------------------------
+do_start() {
+    # Ensure directories exist
+    mkdir -p "${RUN_DIR}"
+    chown "${SLAPD_USER}:${SLAPD_GROUP}" "${RUN_DIR}"
+    chmod 755 "${RUN_DIR}"
+    mkdir -p "${DB_DIR}"
+    chown "${SLAPD_USER}:${SLAPD_GROUP}" "${DB_DIR}"
+    chmod 700 "${DB_DIR}"
+
+    # Check configuration
+    if ! "${DAEMON}" -T test -f "${SLAPD_CONF}" >/dev/null 2>&1; then
+        echo "ERROR: slapd configuration test failed. Check ${SLAPD_CONF}."
+        return 1
+    fi
+
+    # Start daemon
+    start-stop-daemon --start \
+        --quiet \
+        --oknodo \
+        --chuid "${SLAPD_USER}:${SLAPD_GROUP}" \
+        --exec "${DAEMON}" \
+        --pidfile "${PIDFILE}" \
+        -- -f "${SLAPD_CONF}" \
+           -h "${SLAPD_URLS}" \
+           -u "${SLAPD_USER}" \
+           -g "${SLAPD_GROUP}" \
+           ${SLAPD_OPTIONS}
+
+    local ret=$?
+    if [[ $ret -eq 0 ]]; then
+        touch "${LOCKFILE}" 2>/dev/null || true
+    fi
+    return $ret
+}
+
+do_stop() {
+    start-stop-daemon --stop \
+        --quiet \
+        --oknodo \
+        --retry=TERM/30/KILL/5 \
+        --pidfile "${PIDFILE}" \
+        --name "${NAME}"
+
+    local ret=$?
+    rm -f "${LOCKFILE}" 2>/dev/null || true
+    return $ret
+}
+
+do_status() {
+    if [[ -f "${PIDFILE}" ]]; then
+        local pid
+        pid=$(cat "${PIDFILE}")
+        if kill -0 "${pid}" 2>/dev/null; then
+            echo "${DESC} is running (PID: ${pid})."
+            return 0
+        else
+            echo "${DESC} is not running (stale PID file)."
+            return 1
+        fi
+    else
+        echo "${DESC} is not running."
+        return 3
+    fi
+}
+
+do_reload() {
+    if [[ -f "${PIDFILE}" ]]; then
+        kill -HUP "$(cat "${PIDFILE}")"
+        return $?
+    else
+        echo "${DESC} is not running."
+        return 1
+    fi
+}
+
+# ------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------
+case "$1" in
+  start)
+    echo -n "Starting ${DESC}: "
+    do_start && echo "OK" || echo "FAILED"
+    ;;
+
+  stop)
+    echo -n "Stopping ${DESC}: "
+    do_stop && echo "OK" || echo "FAILED"
+    ;;
+
+  restart|force-reload)
+    echo -n "Restarting ${DESC}: "
+    do_stop
+    sleep 1
+    do_start && echo "OK" || echo "FAILED"
+    ;;
+
+  reload)
+    echo -n "Reloading ${DESC}: "
+    do_reload && echo "OK" || echo "FAILED"
+    ;;
+
+  status)
+    do_status
+    ;;
+
+  condrestart|try-restart)
+    if do_status &>/dev/null; then
+        echo -n "Restarting ${DESC}: "
+        do_stop
+        sleep 1
+        do_start && echo "OK" || echo "FAILED"
+    fi
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart|reload|status|condrestart}"
+    exit 2
+    ;;
+esac
+
+exit $?

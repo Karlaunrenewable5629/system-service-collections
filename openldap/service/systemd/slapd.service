@@ -1,0 +1,67 @@
+[Unit]
+Description=OpenLDAP Directory Service (slapd)
+Documentation=man:slapd(8) https://www.openldap.org/doc/admin26/
+After=network.target syslog.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/openldap/slapd.pid
+
+# Load environment overrides from a distro-appropriate file.
+# Debian/Ubuntu: /etc/default/slapd
+# RHEL/Fedora:   /etc/sysconfig/slapd
+EnvironmentFile=-/etc/default/slapd
+EnvironmentFile=-/etc/sysconfig/slapd
+
+# Default environment variables (overridden by EnvironmentFile if present)
+Environment=SLAPD_CONF=/etc/openldap/slapd.conf
+Environment=SLAPD_URLS="ldap:/// ldaps:///"
+Environment=SLAPD_OPTIONS=""
+Environment=SLAPD_USER=ldap
+Environment=SLAPD_GROUP=ldap
+
+# Runtime directory — systemd creates /run/openldap owned by SLAPD_USER
+RuntimeDirectory=openldap
+RuntimeDirectoryOwner=ldap
+RuntimeDirectoryMode=0755
+
+# Pre-start: validate configuration before launching
+ExecStartPre=/usr/sbin/slaptest -u
+
+# Start slapd — the -u / -g flags drop privileges to the service user
+ExecStart=/usr/sbin/slapd \
+    -f ${SLAPD_CONF} \
+    -h "${SLAPD_URLS}" \
+    -u ${SLAPD_USER} \
+    -g ${SLAPD_GROUP} \
+    ${SLAPD_OPTIONS}
+
+# Reload: send SIGHUP to re-read configuration (slapd.conf only; OLC is always live)
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Allow graceful shutdown time
+TimeoutStopSec=60
+
+# Restart on unexpected exit, but not on clean stop or config errors
+Restart=on-failure
+RestartSec=5s
+
+# Security hardening
+User=ldap
+Group=ldap
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/ldap /var/run/openldap /etc/openldap
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=no
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target

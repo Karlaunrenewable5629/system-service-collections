@@ -1,0 +1,57 @@
+#!/sbin/openrc-run
+# ==============================================================================
+# OpenRC init script for OpenLDAP (slapd)
+#
+# Install:
+#   sudo cp slapd /etc/init.d/slapd
+#   sudo chmod +x /etc/init.d/slapd
+#   sudo rc-update add slapd default
+#   sudo rc-service slapd start
+# ==============================================================================
+
+name="slapd"
+description="OpenLDAP Directory Service"
+
+# Configuration file or OLC directory
+: "${SLAPD_CONF:=/etc/openldap/slapd.conf}"
+
+# URLs to listen on (space-separated)
+: "${SLAPD_URLS:=ldap:/// ldaps:///}"
+
+# Additional command-line options
+: "${SLAPD_OPTIONS:=}"
+
+# Service user and group
+: "${SLAPD_USER:=ldap}"
+: "${SLAPD_GROUP:=ldap}"
+
+SLAPD_BIN="/usr/sbin/slapd"
+SLAPD_PID="/var/run/openldap/slapd.pid"
+SLAPD_LOG="/var/log/slapd.log"
+
+command="${SLAPD_BIN}"
+command_args="-f ${SLAPD_CONF} -h \"${SLAPD_URLS}\" -u ${SLAPD_USER} -g ${SLAPD_GROUP} ${SLAPD_OPTIONS}"
+command_background="yes"
+pidfile="${SLAPD_PID}"
+
+output_log="${SLAPD_LOG}"
+error_log="${SLAPD_LOG}"
+
+# Ensure the run directory exists and is writable by the service user
+start_pre() {
+    checkpath --directory --owner "${SLAPD_USER}:${SLAPD_GROUP}" --mode 0755 \
+        "$(dirname "${SLAPD_PID}")"
+    checkpath --directory --owner "${SLAPD_USER}:${SLAPD_GROUP}" --mode 0700 \
+        /var/lib/ldap
+
+    # Test configuration before starting
+    ebegin "Testing slapd configuration"
+    "${SLAPD_BIN}" -T test -f "${SLAPD_CONF}" >/dev/null 2>&1
+    eend $? "Configuration test failed. Check ${SLAPD_CONF}"
+}
+
+depend() {
+    need net
+    after logger
+    use dns
+}
