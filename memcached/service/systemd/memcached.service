@@ -1,0 +1,20 @@
+[Unit]
+Description=Memcached Distributed Memory Caching System
+Documentationhttps://memcached.org/docs/
+After=network.target
+
+[Service]
+Type=daemon
+User=memcached
+Group=memcached
+ExecStart=/usr/bin/memcached -u memcached -l 127.0.0.1 -p 11211 -m 64 -c 1024 -v
+ExecReload=/usr/bin/memcached -u memcached -SIGUSR1
+TimeoutStopSec=5
+KillSignal=SIGTERM
+LimitNOFILE=1048576
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

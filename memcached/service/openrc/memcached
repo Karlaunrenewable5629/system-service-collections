@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="memcached"
+description="Memcached Distributed Memory Caching System"
+
+command="/usr/bin/memcached"
+command_args="-u memcached -l 127.0.0.1 -p 11211 -m 64 -c 1024 -v -d"
+command_background=true
+pidfile="/run/memcached/memcached.pid"
+required_files="/usr/bin/memcached /etc/memcached.conf"
+start_pre() {
+    checkpath --directory --owner memcached:memcached --mode 0755 /var/lib/memcached
+    checkpath --directory --owner memcached:memcached --mode 0755 /var/log/memcached
+    checkpath --directory --owner memcached:memcached --mode 0755 /run/memcached
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/memcached -u memcached -x
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}
