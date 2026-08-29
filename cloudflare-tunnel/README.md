@@ -24,21 +24,38 @@ Cloudflare Tunnel (cloudflared) creates a secure outbound connection between you
 - Port 2000-65535 available (for local service)
 - Linux with systemd, OpenRC, or Windows with NSSM
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Cloudflare Edge]
+    B --> C[cloudflared Tunnel]
+    C --> D[Local Services]
+    D --> E[HTTP / HTTPS]
+    D --> F[TCP / SSH]
+    B --> G[Cloudflare Access\nZero Trust Auth]
+    G --> C
+```
+
 ## Structure
 
 ```
 cloudflare-tunnel/
 ├── config/              - Configuration files and templates
-│   └── config.yml       - cloudflared tunnel configuration
+│   ├── config.yml       - cloudflared tunnel configuration
+│   └── README.md        - Configuration documentation
 ├── install/             - Installation scripts and guides
-│   └── install.sh       - Installation and setup script
+│   ├── install.sh       - Installation and setup script
+│   └── README.md        - Installation instructions
 ├── service/             - Service definitions for different init systems
 │   ├── systemd/         - systemd service unit
 │   ├── openrc/          - OpenRC init script
 │   ├── sysvinit/        - SysV init script
-│   └── windows/         - Windows NSSM service definition
+│   ├── windows/         - Windows NSSM service definition
+│   └── README.md        - Service management guide
 ├── uninstall/           - Uninstallation scripts
-│   └── uninstall.sh     - Uninstallation script
+│   ├── uninstall.sh     - Uninstallation script
+│   └── README.md        - Uninstallation instructions
 └── README.md            - This file
 ```
 
