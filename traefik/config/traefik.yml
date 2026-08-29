@@ -1,0 +1,83 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    watch: true
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+api:
+  dashboard: true
+  insecure: false
+  port: 8080
+  entryPoint: websecure
+
+metrics:
+  prometheus:
+    entryPoint: websecure
+    addServicesLabels: true
+    addEntryPointsLabels: true
+  datadog:
+    addServicesLabels: true
+    addEntryPointsLabels: true
+  statsd:
+    addServicesLabels: true
+    addEntryPointsLabels: true
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@example.com
+      storage: /etc/traefik/acme.json
+      httpChallenge:
+        entryPoint: web
+      dnsChallenge:
+        provider: cloudflare
+
+log:
+  level: INFO
+  format: json
+  filePath: /var/log/traefik/traefik.log
+
+accessLog:
+  filePath: /var/log/traefik/access.log
+  format: json
+  buffersSize: 4096
+  fields:
+    defaultMode: keep
+    names:
+      ClientUsername: keep
+      ClientPassword: drop
+    headers:
+      defaultMode: keep
+      names:
+        User-Agent: keep
+        X-Forwarded-For: keep
+        X-Forwarded-Proto: keep
+        X-Real-Ip: keep
+
+tracing:
+  provider: jaeger
+  localServiceName: traefik
+  jaeger:
+    agent:
+      endpoint: localhost:6831
+
+ping:
+  entryPoint: web
