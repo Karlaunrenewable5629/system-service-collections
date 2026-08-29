@@ -1,0 +1,58 @@
+# MicroK8s configuration reference
+# MicroK8s is primarily configured via snap configuration and add-on flags.
+# This file documents common configuration options and their snap equivalents.
+#
+# Apply snap config with:
+#   sudo microk8s stop
+#   sudo snap set microk8s <key>=<value>
+#   sudo microk8s start
+
+# --- API Server ---
+# Extra API server arguments are set via /var/snap/microk8s/current/args/kube-apiserver
+# Example: --audit-log-path=/var/log/microk8s/audit.log
+
+# --- kubelet ---
+# Extra kubelet arguments: /var/snap/microk8s/current/args/kubelet
+# Example: --max-pods=110
+
+# --- containerd ---
+# containerd config: /var/snap/microk8s/current/args/containerd-template.toml
+
+# --- Proxy / Firewall ---
+# HTTP proxy:
+#   sudo snap set microk8s proxy.http="http://proxy.example.com:3128"
+#   sudo snap set microk8s proxy.https="http://proxy.example.com:3128"
+#   sudo snap set microk8s proxy.no_proxy="localhost,127.0.0.1,10.0.0.0/8"
+
+# --- DNS ---
+# Custom upstream DNS (after enabling DNS add-on):
+#   microk8s kubectl -n kube-system edit configmap/coredns
+
+# --- Registry mirrors ---
+# Edit: /var/snap/microk8s/current/args/containerd-template.toml
+# Add under [plugins."io.containerd.grpc.v1.cri".registry.mirrors]:
+#   [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+#     endpoint = ["https://mirror.example.com"]
+
+# --- HA Clustering ---
+# Bootstrap HA (3+ nodes required):
+#   microk8s enable ha-cluster
+# Add a node:
+#   microk8s add-node   (run on primary, then paste join command on worker)
+
+# --- Common Add-ons ---
+# dns             - CoreDNS service discovery
+# ingress         - NGINX ingress controller
+# metrics-server  - Resource usage metrics
+# dashboard       - Kubernetes dashboard UI
+# registry        - Private container registry on :32000
+# storage         - Local path provisioner
+# gpu             - NVIDIA GPU support
+# prometheus      - Prometheus + Grafana monitoring
+# cert-manager    - Certificate management
+# istio           - Service mesh
+# knative         - Serverless framework
+# argocd          - GitOps continuous delivery
+
+# Enable add-ons:
+#   microk8s enable dns ingress metrics-server dashboard storage
