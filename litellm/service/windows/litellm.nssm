@@ -1,0 +1,18 @@
+# LiteLLM Windows Service Configuration (NSSM)
+# Save as litellm.nssm and run: nssm install litellm < litellm.nssm
+
+Application: C:\Python311\python.exe
+AppParameters: -m litellm --config C:\etc\litellm\config.yaml --host 0.0.0.0 --port 4000
+AppDirectory: C:\opt\litellm
+DisplayName: LiteLLM API Proxy
+Description: Unified LLM API Proxy - Access 100+ LLMs through a single OpenAI-compatible API
+Start: SERVICE_AUTO_START
+Type: SERVICE_WIN32_OWN_PROCESS
+ErrorControl: SERVICE_ERROR_NORMAL
+ObjectName: NT AUTHORITY\NetworkService
+Environment: LITELLM_CONFIG=C:\etc\litellm\config.yaml;OPENAI_API_KEY=your-key-here;LITELLM_ADMIN_KEY=admin-key
+StdOutput: C:\var\log\litellm\litellm-out.log
+StdError: C:\var\log\litellm\litellm-err.log
+RotateFiles: 1
+RotateBytes: 10485760
+RotateSeconds: 86400
