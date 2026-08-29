@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+name="rocketchat"
+description="Rocket.Chat Server"
+
+command="/opt/rocketchat/rocketchat"
+command_background=true
+pidfile="/run/rocketchat/rocketchat.pid"
+command_timeout=30
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner rocketchat:rocketchat --mode 0755 /run/rocketchat
+    checkpath --directory --owner rocketchat:rocketchat --mode 0755 /var/rocketchat
+    checkpath --directory --owner rocketchat:rocketchat --mode 0755 /var/log/rocketchat
+}
+
+stop() {
+    ebegin "Stopping ${name}"
+    /opt/rocketchat/rocketchat stop
+    eend $?
+}

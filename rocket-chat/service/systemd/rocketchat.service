@@ -1,0 +1,22 @@
+[Unit]
+Description=Rocket.Chat Server
+Documentation=https://rocket.chat/docs/
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rocketchat
+Group=rocketchat
+ExecStart=/opt/rocketchat/rocketchat
+WorkingDirectory=/opt/rocketchat
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+ProtectSystem=strict
+ReadWritePaths=/var/rocketchat /var/log/rocketchat
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
