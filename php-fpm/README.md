@@ -21,6 +21,16 @@ PHP FastCGI Process Manager is an alternative PHP FastCGI implementation with ad
 - Port 9000 (slow)
 - PHP-FPM installed on the system
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[PHP-FPM]
+    B --> C[PHP Applications]
+    B --> D[Nginx/Apache]
+    C --> D
+```
+
 ## Structure
 
 ```
