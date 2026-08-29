@@ -23,6 +23,19 @@ System service collection for [Krakend](https://www.krakend.io), the ultra-fast 
   - `windows/` — Windows service definitions (NSSM)
 - `uninstall/` — Uninstallation scripts
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[Krakend]
+    B --> C[API Gateway]
+    B --> D[Rate Limiting]
+    B --> E[Caching]
+    B --> F[Circuit Breaker]
+    E --> C
+    F --> C
+```
+
 ## Quick Start
 
 ### systemd
