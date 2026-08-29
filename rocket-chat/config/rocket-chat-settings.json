@@ -1,0 +1,66 @@
+{
+  "mongoUrl": "mongodb://localhost:27017/rocketchat",
+  "mongoOptions": {
+    "authSource": "admin",
+    "ssl": false
+  },
+  "portalUrl": "https://your-domain.com",
+  "App": {
+    "id": "web.yourdomain.com",
+    "name": "Rocket.Chat",
+    "description": "Rocket.Chat Server",
+    "urls": "",
+    "support": "",
+    "settings": {
+      "url": "https://your-domain.com",
+      "primaryColor": "#1CCAB4",
+      "fromName": "Rocket.Chat",
+      "supportUrl": "",
+      "termsUrl": "",
+      "privacyPolicyUrl": ""
+    }
+  },
+  "Accounts": {
+    "DisableSignup": false,
+    "LoginMethods": [
+      "email",
+      "password"
+    ]
+  },
+  "Notifications": {
+    "DefaultFromAddress": "no-reply@yourdomain.com",
+    "Email": {
+      "FromAddress": "no-reply@yourdomain.com",
+      "Host": "smtp.example.com",
+      "Port": 587,
+      "Username": "user@example.com",
+      "Password": "email_password",
+      "SkipSSLVerification": false
+    }
+  },
+  "Room": {
+    "EnablePostUsername": true,
+    "EnablePostHint": true,
+    "MaxMessageLifetime": 0
+  },
+  "Push": {
+    "Enable": true,
+    "Production": {
+      "APNs": {
+        "Key": "",
+        "KeyId": "",
+        "TeamId": "",
+        "Topic": "com.yourdomain.rocketchat"
+      },
+      "FCM": {
+        "ServerKey": ""
+      }
+    }
+  },
+  "Theme": {
+    "ColorPrimary": "#1CCAB4",
+    "ColorSecondary": "#2A303C",
+    "ColorAccent": "#1CCAB4",
+    "ColorBackground": "#FFFFFF"
+  }
+}
