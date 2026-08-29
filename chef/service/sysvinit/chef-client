@@ -1,0 +1,59 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          chef-client
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Chef Client
+# Description:       Configuration management client
+### END INIT INFO
+
+NAME=chef-client
+DAEMON=/usr/bin/chef-client
+CONFIG=/etc/chef/client.rb
+PIDFILE=/run/chef-client.pid
+USER=chef
+GROUP=chef
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/chef-client /var/cache/chef /var/log/chef
+    chown $USER:$GROUP /run/chef-client /var/cache/chef /var/log/chef
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid $USER:$GROUP --exec $DAEMON -- --log_level info --interval 1800
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    $DAEMON --log_level info --interval 1800
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac

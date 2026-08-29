@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+
+name="chef-client"
+description="Chef Client"
+
+command="/usr/bin/chef-client"
+command_args "--log_level info --interval 1800"
+command_background=true
+pidfile="/run/chef-client.pid"
+required_files="/usr/bin/chef-client /etc/chef/client.rb"
+start_pre() {
+    checkpath --directory --owner chef:chef --mode 0755 /var/cache/chef
+    checkpath --directory --owner chef:chef --mode 0755 /var/log/chef
+    checkpath --directory --owner chef:chef --mode 0755 /etc/chef
+}
+stop() {
+    ebegin "Stopping ${name}"
+    /usr/bin/chef-client -S 30
+    eend $?
+}
+
+depend() {
+    need net
+    after firewall
+}

@@ -1,0 +1,20 @@
+[Unit]
+Description=Chef Client
+Documentation=https://chef docs.io/
+After=network.target
+
+[Service]
+Type=notify
+User=chef
+Group=chef
+ExecStart=/usr/bin/chef-client --log_level info --interval 1800
+ExecReload=/usr/bin/chef-client --log_level info --interval 1800
+TimeoutStopSec=10
+KillSignal=SIGTERM
+LimitNOFILE=65536
+LimitNPROC=512
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
