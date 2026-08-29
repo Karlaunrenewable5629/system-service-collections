@@ -2,18 +2,23 @@
 
 A GUI-based reverse proxy manager built on Node.js and Nginx, featuring an intuitive web interface for managing reverse proxies, SSL certificates, and host configurations.
 
-## Features
+## Prerequisites
 
-- **Intuitive Web UI** — Manage everything from a modern, responsive dashboard
-- **SSL Auto-Renewal** — Automatic Let's Encrypt certificate provisioning and renewal
-- **HTTP/2 Support** — Built-in HTTP/2 configuration for improved performance
-- **Wildcard Certificates** — Support for wildcard SSL certificates via Let's Encrypt
-- **Redirect Policies** — Easy-to-configure URL redirect rules
-- **Proxy Hosts** — Forward traffic to backends with path-based and host-based routing
-- **Access Lists** — IP-based and authentication access controls
-- **Dead Hosts** — Detect and report unhealthy backend services
-- **Database Flexibility** — SQLite (default), PostgreSQL, or MySQL
-- **Multi-Platform** — Supports systemd, OpenRC, SysVinit, and Windows (NSSM)
+- Linux with systemd, OpenRC, or SysVinit, or Windows 10/11 / Server 2016+ with NSSM
+- Root or sudo privileges
+- Port 80 and 443 open
+- Node.js installed
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Clients] --> B[nginx-proxy-manager]
+    B --> C[Web UI]
+    B --> D[Node.js Backend]
+    C --> E[nginx Configuration]
+    D --> F[SSL Certificate Management]
+```
 
 ## Structure
 
