@@ -94,6 +94,8 @@ Each folder contains a service structure supporting multiple init systems, allow
 
 - [x] [containerd](./containerd/) - Container runtime for Linux and Windows.
 - [x] [docker](./docker/) - Container platform for developing, shipping, and running applications.
+- [x] [k3s](./k3s/) - Lightweight Kubernetes distribution designed for production workloads in resource-constrained environments.
+- [x] [microk8s](./microk8s/) - Low-ops, minimal production Kubernetes for developers, cloud, clusters, workstations, edge, and IoT.
 - [x] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
 
 ### Databases
