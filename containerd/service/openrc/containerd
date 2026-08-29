@@ -1,0 +1,22 @@
+#!/sbin/openrc-run
+
+name="containerd"
+description="containerd container runtime"
+
+command="/usr/local/bin/containerd"
+command_background=true
+pidfile="/run/containerd/containerd.pid"
+output_log="/var/log/containerd.log"
+error_log="/var/log/containerd.log"
+
+depend() {
+    need net
+    need localmount
+    after firewall
+}
+
+start_pre() {
+    modprobe overlay 2>/dev/null || true
+    checkpath --directory --mode 0710 /run/containerd
+    checkpath --directory --mode 0710 /var/lib/containerd
+}

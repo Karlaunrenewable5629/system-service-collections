@@ -1,0 +1,54 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          containerd
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: containerd container runtime
+# Description:       Industry-standard container runtime
+### END INIT INFO
+
+NAME=containerd
+DAEMON=/usr/local/bin/containerd
+PIDFILE=/run/containerd/containerd.pid
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    modprobe overlay 2>/dev/null || true
+    mkdir -p /run/containerd /var/lib/containerd
+    chmod 710 /run/containerd /var/lib/containerd
+    start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE \
+        --exec $DAEMON
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 10
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac

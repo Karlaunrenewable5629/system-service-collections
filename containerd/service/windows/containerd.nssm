@@ -1,0 +1,46 @@
+@echo off
+REM containerd Windows Service Installation via NSSM
+REM Run as Administrator
+
+set SERVICE_NAME=containerd
+set DISPLAY_NAME=containerd container runtime
+set DESCRIPTION=Industry-standard container runtime for Linux and Windows
+set EXECUTABLE=C:\containerd\bin\containerd.exe
+set APPDIRECTORY=C:\containerd
+set CONFIG_FILE=C:\containerd\config.toml
+set LOG_DIRECTORY=C:\containerd\logs
+
+REM Create directories
+if not exist "%APPDIRECTORY%\bin" mkdir "%APPDIRECTORY%\bin"
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+if not exist "C:\containerd\root" mkdir "C:\containerd\root"
+if not exist "C:\containerd\state" mkdir "C:\containerd\state"
+
+REM Generate default config if not present
+if not exist "%CONFIG_FILE%" (
+    "%EXECUTABLE%" config default > "%CONFIG_FILE%"
+)
+
+REM Install service
+nssm install %SERVICE_NAME% "%EXECUTABLE%"
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppParameters "--config %CONFIG_FILE%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\containerd-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\containerd-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+nssm set %SERVICE_NAME% Type SERVICE_WIN32_OWN_PROCESS
+
+REM Set recovery actions
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.
+echo Start with: nssm start %SERVICE_NAME%
+echo Stop with : nssm stop %SERVICE_NAME%
