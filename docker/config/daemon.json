@@ -1,0 +1,38 @@
+{
+  "data-root": "/var/lib/docker",
+  "exec-root": "/var/run/docker",
+  "pidfile": "/var/run/docker.pid",
+
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "5"
+  },
+
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ],
+
+  "default-address-pools": [
+    {
+      "base": "172.17.0.0/16",
+      "size": 24
+    }
+  ],
+
+  "dns": ["8.8.8.8", "8.8.4.4"],
+
+  "live-restore": true,
+
+  "metrics-addr": "127.0.0.1:9323",
+  "experimental": false,
+
+  "features": {
+    "buildkit": true
+  },
+
+  "registry-mirrors": [],
+
+  "insecure-registries": []
+}
