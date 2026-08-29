@@ -1,0 +1,92 @@
+# nginx-proxy-manager Configuration
+# Location: /etc/nginx-proxy-manager/npm.yaml
+
+# ==================== Application Settings ====================
+app:
+  name: nginx-proxy-manager
+  version: "2.9.9"
+
+# ==================== Database Configuration ====================
+# Supports SQLite (default), PostgreSQL, and MySQL
+db:
+  # SQLite (default)
+  type: sqlite
+  dbname: npm.db
+  filename: /var/lib/nginx-proxy-manager/npm.db
+
+  # PostgreSQL (uncomment to use)
+  # type: postgresql
+  # host: localhost
+  # port: 5432
+  # dbname: nginx_proxy_manager
+  # user: npm
+  # password: your-password
+
+  # MySQL (uncomment to use)
+  # type: mysql
+  # host: localhost
+  # port: 3306
+  # dbname: nginx_proxy_manager
+  # user: npm
+  # password: your-password
+
+# ==================== Server Settings ====================
+server:
+  # Admin UI port
+  port: 81
+
+  # Proxy ports
+  http_port: 80
+  https_port: 443
+  admin_port: 81
+
+# ==================== Nginx Settings ====================
+nginx:
+  # Nginx configuration directory
+  config_dir: /etc/nginx
+
+  # Nginx binary path
+  binary: /usr/sbin/nginx
+
+  # Nginx template directory
+  template_dir: /usr/lib/nginx-proxy-manager/templates
+
+  # Nginx access and error logs
+  access_log: /var/log/nginx/access.log
+  error_log: /var/log/nginx/error.log
+
+# ==================== SSL Settings ====================
+ssl:
+  # Enable Let's Encrypt auto-renewal
+  letsencrypt:
+    enabled: true
+    email: admin@example.com
+    staging: false
+    challenge_type: http-01
+
+  # Certificate directory
+  cert_dir: /etc/letsencrypt/live
+
+  # SSL certificate and key paths (for manual certs)
+  cert: /etc/nginx/ssl/cert.pem
+  key: /etc/nginx/ssl/key.pem
+
+# ==================== User and Group ====================
+user:
+  name: npm
+  group: npm
+
+# ==================== Logging ====================
+logging:
+  level: info
+  directory: /var/log/nginx-proxy-manager
+  file: npm.log
+
+# ==================== Features ====================
+features:
+  http2: true
+  websockets: true
+  access_lists: true
+  dead_hosts: true
+  redirect_policies: true
+  proxy_hosts: true
