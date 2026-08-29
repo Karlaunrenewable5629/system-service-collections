@@ -24,6 +24,19 @@ HAProxy is a free, very fast and reliable solution offering high availability, l
 - Ports 80, 443, and 8404 (stats) open
 - HAProxy binary installed
 
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Applications] --> B[HAProxy]
+    B --> C[TCP Proxy]
+    B --> D[HTTP Proxy]
+    B --> E[Stats Dashboard]
+    C --> F[Backend Servers]
+    D --> G[Web Servers]
+    E --> H[Stats Page]
+```
+
 ## Structure
 
 ```
