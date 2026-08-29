@@ -1,0 +1,36 @@
+@echo off
+REM Cloudflare Tunnel Windows Service Installation via NSSM
+REM Run as Administrator
+
+set SERVICE_NAME=cloudflared
+set DISPLAY_NAME=Cloudflare Tunnel Service
+set DESCRIPTION=Cloudflare secure tunnel daemon for accessing local services
+set EXECUTABLE=C:\cloudflared\cloudflared.exe
+set APPDIRECTORY=C:\cloudflared
+set LOG_DIRECTORY=C:\cloudflared\log
+
+REM Create log directory if not exists
+if not exist "%LOG_DIRECTORY%" mkdir "%LOG_DIRECTORY%"
+
+REM Install service
+nssm install %SERVICE_NAME% "%EXECUTABLE%" service
+
+nssm set %SERVICE_NAME% DisplayName "%DISPLAY_NAME%"
+nssm set %SERVICE_NAME% Description "%DESCRIPTION%"
+nssm set %SERVICE_NAME% AppDirectory "%APPDIRECTORY%"
+nssm set %SERVICE_NAME% AppStdout "%LOG_DIRECTORY%\cloudflared-out.log"
+nssm set %SERVICE_NAME% AppStderr "%LOG_DIRECTORY%\cloudflared-err.log"
+nssm set %SERVICE_NAME% AppRotateFiles 1
+nssm set %SERVICE_NAME% AppRotateOnline 1
+nssm set %SERVICE_NAME% AppRotateSeconds 86400
+nssm set %SERVICE_NAME% Start SERVICE_AUTO_START
+
+REM Set recovery actions
+nssm set %SERVICE_NAME% ResetPeriod 86400
+nssm set %SERVICE_NAME% Action1 Restart
+nssm set %SERVICE_NAME% Action2 Restart
+nssm set %SERVICE_NAME% Action3 Restart
+
+echo Service %SERVICE_NAME% installed successfully.
+echo Start with: nssm start %SERVICE_NAME%
+echo Stop with: nssm stop %SERVICE_NAME%

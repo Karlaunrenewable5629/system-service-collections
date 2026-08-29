@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+name="cloudflared"
+description="Cloudflare Tunnel"
+
+command="/usr/local/bin/cloudflared"
+command_args="tunnel run <tunnel-name>"
+command_background=true
+pidfile="/run/cloudflared/cloudflared.pid"
+required_files="/usr/local/bin/cloudflared /etc/cloudflared/config.yml"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner cloudflared:cloudflared --mode 0755 /var/lib/cloudflared
+    checkpath --directory --owner cloudflared:cloudflared --mode 0755 /var/log/cloudflared
+    checkpath --directory --owner cloudflared:cloudflared --mode 0755 /run/cloudflared
+}

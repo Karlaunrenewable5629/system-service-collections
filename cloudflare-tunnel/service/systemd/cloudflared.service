@@ -1,0 +1,21 @@
+[Unit]
+Description=Cloudflare Tunnel
+Documentation=https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/cloudflared/
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/bin/cloudflared tunnel run <tunnel-name>
+WorkingDirectory=/var/lib/cloudflared
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+ProtectSystem=strict
+ReadWritePaths=/var/lib/cloudflared /var/log/cloudflared
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,63 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          cloudflared
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Cloudflare Tunnel
+# Description:       Cloudflare secure tunnel daemon
+### END INIT INFO
+
+NAME=cloudflared
+DAEMON=/usr/local/bin/cloudflared
+CONFIG=/etc/cloudflared/config.yml
+PIDFILE=/run/cloudflared/cloudflared.pid
+USER=root
+
+[ -x "$DAEMON" ] || exit 0
+
+. /lib/lsb/init-functions
+
+start() {
+    log_daemon_msg "Starting $NAME" "$NAME"
+    mkdir -p /run/cloudflared /var/lib/cloudflared /var/log/cloudflared
+    start-stop-daemon --start --background --make-pidfile --pidfile $PIDFILE \
+        --chuid root:root --exec $DAEMON -- tunnel run <tunnel-name>
+    log_end_msg $?
+}
+
+stop() {
+    log_daemon_msg "Stopping $NAME" "$NAME"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE --retry 5
+    log_end_msg $?
+}
+
+reload() {
+    log_daemon_msg "Reloading $NAME configuration" "$NAME"
+    kill -HUP $(cat $PIDFILE) 2>/dev/null || true
+    log_end_msg $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|force-reload)
+        stop
+        start
+        ;;
+    reload)
+        reload
+        ;;
+    status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload}"
+        exit 1
+        ;;
+esac
